@@ -1,0 +1,20 @@
+#!/bin/ksh
+
+echo "This will give 755 permission to your home directory, are you sure?(Y/N)"
+read resp
+if [ $resp == Y ] || [ $resp == y ]; then
+  echo "please wait, compiling"
+  g++ -Wall -std=c++0x -o ~/submit Command.cpp Submitter.cpp SubVals.cpp Vals.cpp main.cpp
+  chmod 755 ~/.
+  chmod 755 ~/submit
+  echo "Permissions set"
+  if [ -d ~/submitter_files ]; then
+    echo "submitter_files already exist and will be used"
+  else
+    mkdir ~/submitter_files
+  fi
+  cp template.cfg ~/submitter_files/.
+  echo "installation complete"
+else
+  echo "aborted"
+fi
