@@ -94,6 +94,7 @@
   <ItemGroup>
     <None Include="submitter.cfg" />
     <None Include="submitter_files\w1.cfg" />
+    <None Include="template.cfg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

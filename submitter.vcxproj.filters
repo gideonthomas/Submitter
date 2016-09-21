@@ -57,5 +57,8 @@
     <None Include="submitter_files\w1.cfg">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="template.cfg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -127,7 +127,7 @@ namespace sict{
       i++;
     }
     os << "|" << endl;
-    os << "Professors character ASCII code: hex(" << hex << int(prof[i])
+    os << "Professor's character ASCII code: hex(" << hex << int(prof[i])
       << "), dec(" << dec << int(prof[i]) << ")" << endl;
     os << "un-matched character ASCII code: hex(" << hex << int(stdnt[i])
       << "), dec(" << dec << int(stdnt[i]) << ")" << endl;
@@ -147,7 +147,7 @@ namespace sict{
     bool good = true;
     fstream file(_AsVals["output_file"][0].c_str(),ios::in);
     if (!file){
-      cout << "Error #17.1: cound not open " << _AsVals["output_file"][0] << endl;
+      cout << "Error #17.1: could not open " << _AsVals["output_file"][0] << endl;
       good = false;
     }
     else{
@@ -173,7 +173,7 @@ namespace sict{
       file.close();
       file.open(_AsVals["output_file"][0].c_str(), ios::out);
       if (!file){
-        cout << "Error #17.2: cound not open " << _AsVals["output_file"][0] <<" for output"<< endl;
+        cout << "Error #17.2: could not open " << _AsVals["output_file"][0] <<" for output"<< endl;
         good = false;
       }
       else{
@@ -194,11 +194,11 @@ namespace sict{
     ifstream stfile(_AsVals["output_file"][0].c_str());
     ifstream prfile(_AsVals["correct_output"][0].c_str());
     if (!stfile){
-      cout << "Error #17: cound not open " << _AsVals["output_file"][0] << endl;
+      cout << "Error #17: could not open " << _AsVals["output_file"][0] << endl;
       good = false;
     }
     if (!prfile){
-      cout << "Error #17: cound not open " << _AsVals["correct_output"][0] << endl;
+      cout << "Error #17: could not open " << _AsVals["correct_output"][0] << endl;
       good = false;
     }
     while (line < to && good && stfile && prfile){
@@ -285,8 +285,8 @@ namespace sict{
         clrscr();
         cout << "FOLLOW THESE INSTRUCTIONS:" << endl;
         cout << "1- Type " << _AsVals["exe_name"] << " and hit <ENTER>" << endl;
-        cout << "2- Use the test data sepcified in " << name() << " to test the program" << endl;
-        cout << "3- When done, type exit and hit <ENTER> to continue the sumbission process." << endl;
+        cout << "2- Use the test data specified in " << name() << " to test the program" << endl;
+        cout << "3- When done, type exit and hit <ENTER> to continue the submission process." << endl;
         Command("script " + _AsVals["output_file"][0]).run();
       }
       else{
@@ -314,24 +314,24 @@ namespace sict{
           }
           else{
             cout << "Error #15: could not access " << _AsVals["correct_output"][0] << "." << endl
-              << "please report this to you professor!" << endl;
+              << "please report this to your professor!" << endl;
             bad = 15;
           }
         }
         else{
           cout << "Error #14: \"correct output\" is not specified!" << endl
-            << "please report this to you professor!" << endl;
+            << "please report this to your professor!" << endl;
           bad = 14;
         }
       }
       else{
         cout << "Error #16: bad \"comparison range\" values!" << endl
-          << "please report this to you professor!" << endl;
+          << "please report this to your professor!" << endl;
       }
     }
     else{
       cout << "Error #13: \"comparison range\" is not specified!" << endl
-        << "please report this to you professor!" << endl;
+        << "please report this to your professor!" << endl;
       bad = 13;
     }
     return bad;
@@ -344,12 +344,12 @@ namespace sict{
   0 OK
   1 incorrect command line argument
   2 can not open submitter specs file
-  3 assessment name missing in assignment configuratrion file
+  3 assessment name missing in assignment configuration file
   4 Student does not have all the files available in submission directory
-  5 tester files missing in professor's direcotry or directory not accessible
+  5 tester files missing in professor's directory or directory not accessible
   6 Complier command not specified in config file
   7 file names to be compiled are not specified in the assessment config file!
-  8 the err_file value is not sepcified in the assessment config file
+  8 the err_file value is not specified in the assessment config file
   9 compile error in student assignment
   10 compile warning in student assignment
   11 the exe_name value is not specified in the assessment config file
@@ -369,7 +369,7 @@ namespace sict{
     cout << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
     // if the command has valid format
     if (_argc != 2){
-      cout << "Error #1: submsstion command format: " << endl;
+      cout << "Error #1: submission command format: " << endl;
       cout << "~prof_name.prof_lastname/submit AssignmentName<ENTER>" << endl;
       bad = 1;
     }
@@ -388,7 +388,7 @@ namespace sict{
       }
       else{ // otherwise exit with error
         cout << "Error #3: \"assessment_name\" is not specified!" << endl
-          << "please report this to you professor!" << endl;
+          << "please report this to your professor!" << endl;
         bad = 3;
       }
     }
@@ -409,7 +409,7 @@ namespace sict{
         cout << "Success! no errors or warnings..." << endl;
       }
     }
-    if (!bad && _AsVals["exectue"][0] == "yes"){
+    if (!bad && _AsVals["execute"][0] == "yes"){
       bad = execute();
     }
     if (!bad && _AsVals["check_output"][0] == "yes"){
