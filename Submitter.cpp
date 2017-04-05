@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -153,7 +154,7 @@ namespace sict{
     else{
       int size;
       file.seekg((ios::off_type)0, ios::end);
-      size = file.tellg();
+      size = int(file.tellg());
       char* buf = new char[size + 1];
       file.seekg((ios::off_type)0);
       char ch;
@@ -384,7 +385,12 @@ namespace sict{
     if (!bad){
       // if Assignment name is set in the assignment spcs files
       if (_AsVals.exist("assessment_name")){
-        cout << "Submitting " << name() << endl;
+        if (_AsVals.exist("submit_files")) {
+          cout << "Submitting " << name() << endl;
+        }
+        else {
+          cout << "Testing " << name() << endl;
+        }
       }
       else{ // otherwise exit with error
         cout << "Error #3: \"assessment_name\" is not specified!" << endl
@@ -415,39 +421,45 @@ namespace sict{
     if (!bad && _AsVals["check_output"][0] == "yes"){
       bad = checkOutput();
     }
-    if (!bad && ok2submit){
-      cout << endl << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
-      char res = cin.get();
-      cin.ignore(1000, '\n');
-      if (res == 'Y' || res == 'y'){
-        if (submit(_AsVals["prof_email"][0])){
-          cout << "Thank you!, Your work is now submitted." << endl;
-        }
-        else{
-          bad = 19;
-          cout << "Error #19: email failed." << endl
-            << "Please report this to your professor" << endl;
-        }
-        if (!bad && _AsVals["prof_email"].size() > 1){
-          cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
-          char res = cin.get();
-          cin.ignore(1000, '\n');
-          if (res == 'Y' || res == 'y'){
-            for (i = 1; i < signed(_AsVals["prof_email"].size()); i++){
-              if (submit(_AsVals["prof_email"][i])){
-                cout << "CC no " << i << " is sent to the TA for feedback." << endl;
-              }
-              else{
-                bad = 19;
-                cout << "Error #19: email CC failed." << endl
-                  << "Please report this to your professor" << endl;
+    
+    if(!bad && ok2submit){
+      if (_AsVals.exist("submit_files")) {
+        cout << endl << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
+        char res = cin.get();
+        cin.ignore(1000, '\n');
+        if (res == 'Y' || res == 'y') {
+          if (submit(_AsVals["prof_email"][0])) {
+            cout << "Thank you!, Your work is now submitted." << endl;
+          }
+          else {
+            bad = 19;
+            cout << "Error #19: email failed." << endl
+              << "Please report this to your professor" << endl;
+          }
+          if (!bad && _AsVals["prof_email"].size() > 1) {
+            cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
+            char res = cin.get();
+            cin.ignore(1000, '\n');
+            if (res == 'Y' || res == 'y') {
+              for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
+                if (submit(_AsVals["prof_email"][i])) {
+                  cout << "CC no " << i << " is sent to the TA for feedback." << endl;
+                }
+                else {
+                  bad = 19;
+                  cout << "Error #19: email CC failed." << endl
+                    << "Please report this to your professor" << endl;
+                }
               }
             }
           }
         }
+        else {
+          cout << "Submission aborted by user!" << endl;
+        }
       }
-      else{
-        cout << "Submission aborted by user!" << endl;
+      else {
+        cout << "Test Successful!" << endl;
       }
     }
     return bad;

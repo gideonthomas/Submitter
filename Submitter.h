@@ -9,7 +9,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.94"
+#define SUBMITTER_VERSION "0.95"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
