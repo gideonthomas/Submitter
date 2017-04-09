@@ -9,6 +9,7 @@
 #include "SubVals.h"
 #include "Command.h"
 #include "Submitter.h"
+//#define SICT_DEBUG_SUBMITTER
 using namespace std;
 namespace sict{
   Submitter::Submitter(int argc, char** argv) :_cls("clear"){
@@ -35,10 +36,10 @@ namespace sict{
     while (file && !done){
       file >> V;  // read a line of config file
       if (V.size() > 0){ // if any values read
-        done = true;
-        if (V[0] == "dir"){
-          _submitterDir = _home + V[1];
-        }
+	done = true;
+	if (V[0] == "dir"){
+	  _submitterDir = _home + V[1];
+	}
       }
     }
     file.close();
@@ -53,8 +54,8 @@ namespace sict{
     while (file){
       file >> V;
       if (V.size() > 1){
-        ok = true;
-        _AsVals.add(V[0], Vals(V[1], ','));
+	ok = true;
+	_AsVals.add(V[0], Vals(V[1], ','));
       }
     }
     file.close();
@@ -66,10 +67,10 @@ namespace sict{
       ret = _AsVals["copy_files"].size() > 0;
       int i;
       for (i = 0; ret && i < _AsVals["copy_files"].size(); i++){
-        Command cmd("cp ");
-        cmd += (_submitterDir + "/" + _AsVals["copy_files"][i] + " .");
-        // cout << cmd << endl; // to show or not to show!
-        ret = (cmd.run() == 0);
+	Command cmd("cp ");
+	cmd += (_submitterDir + "/" + _AsVals["copy_files"][i] + " .");
+	// cout << cmd << endl; // to show or not to show!
+	ret = (cmd.run() == 0);
       }
     }
     return ret;
@@ -82,11 +83,11 @@ namespace sict{
     for (i = 0; ret && i < files.size(); i++){
       file.open(files[i]);
       if (!file){
-        ok2submit = ret = false;
-        cout << files[i] << ", is missing!" << endl;
+	ok2submit = ret = false;
+	cout << files[i] << ", is missing!" << endl;
       }
       else{
-        file.close();
+	file.close();
       }
       file.clear();
     }
@@ -101,13 +102,13 @@ namespace sict{
     ostream& display(ostream& os)const{
       const char* line = _line;
       while (*line){
-        if (*line == '\b'){
-          os << "\\b";
-        }
-        else{
-          os << *line;
-        }
-        line++;
+	if (*line == '\b'){
+	  os << "\\b";
+	}
+	else{
+	  os << *line;
+	}
+	line++;
       }
       return os;
     }
@@ -163,29 +164,29 @@ namespace sict{
       char ch;
       int i = 0;
       while (!file.fail()){
-        ch = file.get();
-        if (!file.fail()){
-          if (ch == '\b'){
-            if (i>0) i--;
-          }
-          else{
-            buf[i++] = ch;
-          }
-        }
+	ch = file.get();
+	if (!file.fail()){
+	  if (ch == '\b'){
+	    if (i>0) i--;
+	  }
+	  else{
+	    buf[i++] = ch;
+	  }
+	}
       }
       buf[i] = 0;
       file.close();
       file.open(_AsVals["output_file"][0].c_str(), ios::out);
       if (!file){
-        cout << "Error #17.2: could not open " << _AsVals["output_file"][0] <<" for output"<< endl;
-        good = false;
+	cout << "Error #17.2: could not open " << _AsVals["output_file"][0] <<" for output"<< endl;
+	good = false;
       }
       else{
-        i = 0;
-        while (buf[i]){
-          file.put(buf[i++]);
-        }
-        file.close();
+	i = 0;
+	while (buf[i]){
+	  file.put(buf[i++]);
+	}
+	file.close();
       }
       delete[] buf;
     }
@@ -197,7 +198,10 @@ namespace sict{
     int curLine;
     for (int i = 0; !skip && i < skipNum; i++) {
       if (sscanf(_AsVals["comp_range"][i + 2].c_str(), "%d", &curLine) == 1 && curLine == lineNo) {
-        skip = true;
+	skip = true;
+#ifdef SICT_DEBUG_SUBMITTER
+	cout << "Skipping line " << curLine << endl;
+#endif
       }
     }
     return skip;
@@ -222,8 +226,13 @@ namespace sict{
       stfile.getline(sstr, 255, '\n');
       prfile.getline(pstr, 255, '\n');
       if (!skipLine(line) && line >= from){
-        ok2submit = good = compare(sstr, pstr, line);
+	ok2submit = good = compare(sstr, pstr, line);
       }
+#ifdef SICT_DEBUG_SUBMITTER
+      else{
+	cout<<"Skipping "<< line <<": " << sstr << endl;
+      }
+#endif
     }
     if (line < from){
       ok2submit = good = false;
@@ -238,45 +247,45 @@ namespace sict{
     if (_AsVals.exist("compile_command")){
       Command compile(_AsVals["compile_command"][1]);
       if (_AsVals.exist("compile_files")){
-        for (i = 0; i < _AsVals["compile_files"].size(); i++){
-          compile += (" " + _AsVals["compile_files"][i]);
-        }
-        if (_AsVals.exist("err_file")){
-          compile += (" 2> " + _AsVals["err_file"][0]);
-          cout << compile << endl;
+	for (i = 0; i < _AsVals["compile_files"].size(); i++){
+	  compile += (" " + _AsVals["compile_files"][i]);
+	}
+	if (_AsVals.exist("err_file")){
+	  compile += (" 2> " + _AsVals["err_file"][0]);
+	  cout << compile << endl;
 #ifndef SICT_DEBUG
-          if ((errcode = compile.run()) != 0){
-            cout << "You have compilation errors. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
-              << "and correct them." << endl << "Submission aborted! (code: " <<errcode <<")"<< endl;
-            ok2submit = false;
-            bad = 9;
-          }
+	  if ((errcode = compile.run()) != 0){
+	    cout << "You have compilation errors. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
+	      << "and correct them." << endl << "Submission aborted! (code: " <<errcode <<")"<< endl;
+	    ok2submit = false;
+	    bad = 9;
+	  }
 
-          if (!bad && _AsVals["allow_warning"][0] != "yes"){
-            if (Command("grep warning " + _AsVals["err_file"][0] + ">/dev/null").run() == 0){
-              cout << "You have compilation warnings. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
-                << "and correct them." << endl << "Submission aborted!" << endl;
-              bad = 10;
-              ok2submit = false;
-            }
-          }
+	  if (!bad && _AsVals["allow_warning"][0] != "yes"){
+	    if (Command("grep warning " + _AsVals["err_file"][0] + ">/dev/null").run() == 0){
+	      cout << "You have compilation warnings. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
+		<< "and correct them." << endl << "Submission aborted!" << endl;
+	      bad = 10;
+	      ok2submit = false;
+	    }
+	  }
 #endif
-        }
-        else{
-          cout << "Error #8: error log filename not specified!" << endl
-            << "Please report this to your professor." << endl;
-          bad = 8;
-        }
+	}
+	else{
+	  cout << "Error #8: error log filename not specified!" << endl
+	    << "Please report this to your professor." << endl;
+	  bad = 8;
+	}
       }
       else{
-        cout << "Error #7: file names to be compiled not specified!" << endl
-          << "Please report this to your professor." << endl;
-        bad = 7;
+	cout << "Error #7: file names to be compiled not specified!" << endl
+	  << "Please report this to your professor." << endl;
+	bad = 7;
       }
     }
     else {
       cout << "Error #6: Compile command not found!" << endl
-        << "Please report this to your professor." << endl;
+	<< "Please report this to your professor." << endl;
       bad = 6;
     }
     return bad;
@@ -285,30 +294,30 @@ namespace sict{
     int bad = 0;
     if (!_AsVals.exist("exe_name")){
       cout << "Error #11: executable filename not specified!" << endl
-        << "Please report this to your professor." << endl;
+	<< "Please report this to your professor." << endl;
       bad = 11;
     }
     else if (!_AsVals.exist("output_file")){
       cout << "Error #12: output filename not specified!" << endl
-        << "Please report this to your professor." << endl;
+	<< "Please report this to your professor." << endl;
       bad = 12;
     }
     else{
       if (_AsVals["output_type"][0] == "script"){
-        cout << "\n\nREAD THE FOLLOWING CAREFULLY!" << endl;
-        cout << "I am about to execute the tester and script the output to \"" << _AsVals["output_file"][0] << "\"" << endl;
-        cout << "Please enter the values carefuly and exactly as instructed." << endl
-          << "Press <ENTER> to start...";
-        cin.ignore(1000, '\n');
-        clrscr();
-        cout << "FOLLOW THESE INSTRUCTIONS:" << endl;
-        cout << "1- Type " << _AsVals["exe_name"] << " and hit <ENTER>" << endl;
-        cout << "2- Use the test data specified in " << name() << " to test the program" << endl;
-        cout << "3- When done, type exit and hit <ENTER> to continue the submission process." << endl;
-        Command("script " + _AsVals["output_file"][0]).run();
+	cout << "\n\nREAD THE FOLLOWING CAREFULLY!" << endl;
+	cout << "I am about to execute the tester and script the output to \"" << _AsVals["output_file"][0] << "\"" << endl;
+	cout << "Please enter the values carefuly and exactly as instructed." << endl
+	  << "Press <ENTER> to start...";
+	cin.ignore(1000, '\n');
+	clrscr();
+	cout << "FOLLOW THESE INSTRUCTIONS:" << endl;
+	cout << "1- Type " << _AsVals["exe_name"] << " and hit <ENTER>" << endl;
+	cout << "2- Use the test data specified in " << name() << " to test the program" << endl;
+	cout << "3- When done, type exit and hit <ENTER> to continue the submission process." << endl;
+	Command("script " + _AsVals["output_file"][0]).run();
       }
       else{
-        Command(_AsVals["exe_name"] + " >" + _AsVals["output_file"]).run();
+	Command(_AsVals["exe_name"] + " >" + _AsVals["output_file"]).run();
       }
     }
     return bad;
@@ -319,37 +328,37 @@ namespace sict{
     if (!removeBS()) bad = 17;
     if (!bad && _AsVals.exist("comp_range")){
       if (sscanf(_AsVals["comp_range"][0].c_str(), "%d", &from) == 1
-        && sscanf(_AsVals["comp_range"][1].c_str(), "%d", &to) == 1){
-        if (_AsVals.exist("correct_output")){
-          if (Command("cp " + _submitterDir + "/" + _AsVals["correct_output"][0] + " .").run() == 0){
-            if (!compareOutputs(from, to)){
-              bad = 18;
-              cout << "Outputs don't match. Submission aborted!" << endl;
-            }
-            else{
-              cout << "Success!... Outputs match." << endl;
-            }
-          }
-          else{
-            cout << "Error #15: could not access " << _AsVals["correct_output"][0] << "." << endl
-              << "please report this to your professor!" << endl;
-            bad = 15;
-          }
-        }
-        else{
-          cout << "Error #14: \"correct output\" is not specified!" << endl
-            << "please report this to your professor!" << endl;
-          bad = 14;
-        }
+	&& sscanf(_AsVals["comp_range"][1].c_str(), "%d", &to) == 1){
+	if (_AsVals.exist("correct_output")){
+	  if (Command("cp " + _submitterDir + "/" + _AsVals["correct_output"][0] + " .").run() == 0){
+	    if (!compareOutputs(from, to)){
+	      bad = 18;
+	      cout << "Outputs don't match. Submission aborted!" << endl;
+	    }
+	    else{
+	      cout << "Success!... Outputs match." << endl;
+	    }
+	  }
+	  else{
+	    cout << "Error #15: could not access " << _AsVals["correct_output"][0] << "." << endl
+	      << "please report this to your professor!" << endl;
+	    bad = 15;
+	  }
+	}
+	else{
+	  cout << "Error #14: \"correct output\" is not specified!" << endl
+	    << "please report this to your professor!" << endl;
+	  bad = 14;
+	}
       }
       else{
-        cout << "Error #16: bad \"comparison range\" values!" << endl
-          << "please report this to your professor!" << endl;
+	cout << "Error #16: bad \"comparison range\" values!" << endl
+	  << "please report this to your professor!" << endl;
       }
     }
     else{
       cout << "Error #13: \"comparison range\" is not specified!" << endl
-        << "please report this to your professor!" << endl;
+	<< "please report this to your professor!" << endl;
       bad = 13;
     }
     return bad;
@@ -384,6 +393,9 @@ namespace sict{
     int bad = 0;
     int i = 0;
     clrscr();
+#ifdef SICT_DEBUG_SUBMITTER
+    cout<< "DEBUGGING SUBMITTER.........................................." << endl;
+#endif
     cout << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
     // if the command has valid format
     if (_argc != 2){
@@ -397,22 +409,22 @@ namespace sict{
       // get the assignment specs and put it in AsVals
       bad = int(!getAssignmentValues()) * 2;
       bad && cout << "Error #2: Can not find the assignment submission sepcs!" << endl
-        << "Please report this to your professor!" << endl;
+	<< "Please report this to your professor!" << endl;
     }
     if (!bad){
       // if Assignment name is set in the assignment spcs files
       if (_AsVals.exist("assessment_name")){
-        if (_AsVals.exist("submit_files")) {
-          cout << "Submitting " << name() << endl;
-        }
-        else {
-          cout << "Testing " << name() << endl;
-        }
+	if (_AsVals.exist("submit_files")) {
+	  cout << "Submitting " << name() << endl;
+	}
+	else {
+	  cout << "Testing " << name() << endl;
+	}
       }
       else{ // otherwise exit with error
-        cout << "Error #3: \"assessment_name\" is not specified!" << endl
-          << "please report this to your professor!" << endl;
-        bad = 3;
+	cout << "Error #3: \"assessment_name\" is not specified!" << endl
+	  << "please report this to your professor!" << endl;
+	bad = 3;
       }
     }
     if (!bad){
@@ -429,7 +441,7 @@ namespace sict{
     }
     if (!bad && _AsVals["compile"][0] == "yes"){
       if ((bad = compile()) == 0){
-        cout << "Success! no errors or warnings..." << endl;
+	cout << "Success! no errors or warnings..." << endl;
       }
     }
     if (!bad && _AsVals["execute"][0] == "yes"){
@@ -441,42 +453,42 @@ namespace sict{
     
     if(!bad && ok2submit){
       if (_AsVals.exist("submit_files")) {
-        cout << endl << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
-        char res = cin.get();
-        cin.ignore(1000, '\n');
-        if (res == 'Y' || res == 'y') {
-          if (submit(_AsVals["prof_email"][0])) {
-            cout << "Thank you!, Your work is now submitted." << endl;
-          }
-          else {
-            bad = 19;
-            cout << "Error #19: email failed." << endl
-              << "Please report this to your professor" << endl;
-          }
-          if (!bad && _AsVals["prof_email"].size() > 1) {
-            cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
-            char res = cin.get();
-            cin.ignore(1000, '\n');
-            if (res == 'Y' || res == 'y') {
-              for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
-                if (submit(_AsVals["prof_email"][i])) {
-                  cout << "CC no " << i << " is sent to the TA for feedback." << endl;
-                }
-                else {
-                  bad = 19;
-                  cout << "Error #19: email CC failed." << endl
-                    << "Please report this to your professor" << endl;
-                }
-              }
-            }
-          }
-        }
-        else {
-          cout << "Submission aborted by user!" << endl;
-        }
+	cout << endl << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
+	char res = cin.get();
+	cin.ignore(1000, '\n');
+	if (res == 'Y' || res == 'y') {
+	  if (submit(_AsVals["prof_email"][0])) {
+	    cout << "Thank you!, Your work is now submitted." << endl;
+	  }
+	  else {
+	    bad = 19;
+	    cout << "Error #19: email failed." << endl
+	      << "Please report this to your professor" << endl;
+	  }
+	  if (!bad && _AsVals["prof_email"].size() > 1) {
+	    cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
+	    char res = cin.get();
+	    cin.ignore(1000, '\n');
+	    if (res == 'Y' || res == 'y') {
+	      for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
+		if (submit(_AsVals["prof_email"][i])) {
+		  cout << "CC no " << i << " is sent to the TA for feedback." << endl;
+		}
+		else {
+		  bad = 19;
+		  cout << "Error #19: email CC failed." << endl
+		    << "Please report this to your professor" << endl;
+		}
+	      }
+	    }
+	  }
+	}
+	else {
+	  cout << "Submission aborted by user!" << endl;
+	}
       }
       else {
-        cout << "Test Successful!" << endl;
+	cout << "Test Successful!" << endl;
       }
     }
     return bad;
