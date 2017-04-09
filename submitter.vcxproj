@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="submitter.cfg" />
+    <None Include="submitter_files\244_fp_short.cfg" />
     <None Include="submitter_files\w1.cfg" />
     <None Include="template.cfg" />
   </ItemGroup>

@@ -19,6 +19,9 @@ namespace sict{
     if (last != string::npos){
       _home = _home.substr(0, last + 1);
     }
+#ifdef SICT_DEBUG
+    _home = "";
+#endif
     ok2submit = true;
   }
   void Submitter::clrscr()const{
@@ -188,6 +191,17 @@ namespace sict{
     }
     return good;
   }
+  bool Submitter::skipLine(int lineNo) {
+    int skipNum = _AsVals["comp_range"].size() - 2;
+    bool skip = false;
+    int curLine;
+    for (int i = 0; !skip && i < skipNum; i++) {
+      if (sscanf(_AsVals["comp_range"][i + 2].c_str(), "%d", &curLine) == 1 && curLine == lineNo) {
+        skip = true;
+      }
+    }
+    return skip;
+  }
   bool Submitter::compareOutputs(int from, int to){
     char sstr[256], pstr[256];
     bool good = true;
@@ -207,7 +221,7 @@ namespace sict{
       sstr[0] = pstr[0] = 0;
       stfile.getline(sstr, 255, '\n');
       prfile.getline(pstr, 255, '\n');
-      if (line >= from){
+      if (!skipLine(line) && line >= from){
         ok2submit = good = compare(sstr, pstr, line);
       }
     }
@@ -230,12 +244,14 @@ namespace sict{
         if (_AsVals.exist("err_file")){
           compile += (" 2> " + _AsVals["err_file"][0]);
           cout << compile << endl;
+#ifndef SICT_DEBUG
           if ((errcode = compile.run()) != 0){
             cout << "You have compilation errors. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
               << "and correct them." << endl << "Submission aborted! (code: " <<errcode <<")"<< endl;
             ok2submit = false;
             bad = 9;
           }
+
           if (!bad && _AsVals["allow_warning"][0] != "yes"){
             if (Command("grep warning " + _AsVals["err_file"][0] + ">/dev/null").run() == 0){
               cout << "You have compilation warnings. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
@@ -244,6 +260,7 @@ namespace sict{
               ok2submit = false;
             }
           }
+#endif
         }
         else{
           cout << "Error #8: error log filename not specified!" << endl

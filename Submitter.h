@@ -9,7 +9,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.95"
+#define SUBMITTER_VERSION "0.96"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -42,6 +42,7 @@ namespace sict{
     int compile();
     int execute();
     int checkOutput();
+    bool skipLine(int lineNo);
     bool compareOutputs(int from, int to); 
     const char* name();
     bool submit(std::string& toEmail);

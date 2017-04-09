@@ -1,9 +1,9 @@
-//#define SICT_DEBUG
+#include <cstdlib>
+#include "Command.h"
+
 # ifdef SICT_DEBUG
 #   include <iostream>
 # endif
-#include <cstdlib>
-#include "Command.h"
 
 using namespace std;
 namespace sict{

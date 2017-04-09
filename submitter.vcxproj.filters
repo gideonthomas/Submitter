@@ -60,5 +60,8 @@
     <None Include="template.cfg">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="submitter_files\244_fp_short.cfg">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
