@@ -523,6 +523,7 @@ namespace sict {
          email += " " + toEmail;
       }
       email += " -- -f `whoami`@myseneca.ca";
+      cout << email << endl;
       return email.run() == 0;
    }
 }
