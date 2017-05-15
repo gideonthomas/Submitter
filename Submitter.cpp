@@ -524,7 +524,7 @@ namespace sict {
       }
       email += " -- -f `whoami`@myseneca.ca";
 #ifdef SICT_DEBUGEMAIL
-      cout << mail << endl;
+      cout << email << endl;
       return true;
 #else
       return email.run() == 0;
