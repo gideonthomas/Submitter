@@ -467,7 +467,7 @@ namespace sict {
                }
                if (!bad) {
                   if (submit(_AsVals["prof_email"][0],true)) {
-                     cout << "A copy of the submission is sent to you \"myseneca.ca\" email." << endl;
+                     cout << "A copy of the submission is sent to your \"myseneca.ca\" email." << endl;
                   }
                   else {
                      bad = 19;
