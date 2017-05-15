@@ -243,7 +243,6 @@ namespace sict {
    int Submitter::compile() {
       int bad = 0;
       int i = 0;
-      int errcode = 0;
       if (_AsVals.exist("compile_command")) {
          Command compile(_AsVals["compile_command"][1]);
          if (_AsVals.exist("compile_files")) {
