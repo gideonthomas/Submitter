@@ -523,8 +523,14 @@ namespace sict {
          email += " " + toEmail;
       }
       email += " -- -f `whoami`@myseneca.ca";
-      cout << email << endl;
+#ifdef SICT_DEBUGEMAIL
+      cout << mail << endl;
+      return true;
+#else
       return email.run() == 0;
+#endif
+
+    
    }
 }
 
