@@ -28,6 +28,16 @@ namespace sict {
    void Submitter::clrscr()const {
       _cls.run();
    }
+   bool Submitter::yes()const {
+      char res = cin.get();
+      cin.ignore(1000, '\n');
+      while (res != 'Y' && res != 'y' && res != 'N' && res != 'n') {
+         cout << "Only Y or N are acceptable: ";
+         res = cin.get();
+         cin.ignore(1000, '\n');
+      }
+      return res == 'Y' || res == 'y';
+   }
    void Submitter::setSubmitterDir() {
       bool done = false;
       Vals V('|');
@@ -207,7 +217,7 @@ namespace sict {
       return skip;
    }
    bool Submitter::compareOutputs(int from, int to) {
-      char sstr[256], pstr[256];
+      char sstr[512], pstr[512];
       bool good = true;
       int line = 0;
       ifstream stfile(_AsVals["output_file"][0].c_str());
@@ -253,7 +263,6 @@ namespace sict {
             if (_AsVals.exist("err_file")) {
                compile += (" 2> " + _AsVals["err_file"][0]);
                cout << compile << endl;
-#ifndef SICT_DEBUG
                if ((errcode = compile.run()) != 0) {
                   cout << "You have compilation errors. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
                      << "and correct them." << endl << "Submission aborted! (code: " << errcode << ")" << endl;
@@ -269,7 +278,6 @@ namespace sict {
                      ok2submit = false;
                   }
                }
-#endif
             }
             else {
                cout << "Error #8: error log filename not specified!" << endl
@@ -454,9 +462,7 @@ namespace sict {
       if (!bad && ok2submit) {
          if (_AsVals.exist("submit_files")) {
             cout << endl << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
-            char res = cin.get();
-            cin.ignore(1000, '\n');
-            if (res == 'Y' || res == 'y') {
+            if (yes()) {
                if (submit(_AsVals["prof_email"][0])) {
                   cout << "Thank you!, Your work is now submitted." << endl;
                }
@@ -466,20 +472,23 @@ namespace sict {
                      << "Please report this to your professor" << endl;
                }
                if (!bad) {
-                  if (submit(_AsVals["prof_email"][0],true)) {
-                     cout << "A copy of the submission is sent to your \"myseneca.ca\" email." << endl;
-                  }
-                  else {
-                     bad = 19;
-                     cout << "Error #19: confirmation email failed." << endl
-                        << "Please report this to your professor" << endl;
+                  if (!_AsVals.exist("CC_student") || _AsVals["CC_student"][0] == "yes") {
+                     cout << endl << "Would you like to receive a copy of this submission? (Y)es/(N)o: ";
+                     if (yes()) {
+                        if (submit(_AsVals["prof_email"][0], true)) {
+                           cout << "A copy of the submission is sent to your \"myseneca.ca\" email." << endl;
+                        }
+                        else {
+                           bad = 19;
+                           cout << "Error #19: confirmation email failed." << endl
+                              << "Please report this to your professor" << endl;
+                        }
+                     }
                   }
                }
                if (!bad && _AsVals["prof_email"].size() > 1) {
                   cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
-                  char res = cin.get();
-                  cin.ignore(1000, '\n');
-                  if (res == 'Y' || res == 'y') {
+                  if (yes()) {
                      for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
                         if (submit(_AsVals["prof_email"][i])) {
                            cout << "CC no " << i << " is sent to the TA for feedback." << endl;

@@ -34,6 +34,7 @@ namespace sict{
     Command _cls;
     void setSubmitterDir();
     void clrscr()const;
+    bool yes()const;
     bool getAssignmentValues();
     bool copyProfFiles();
     bool filesExist();
