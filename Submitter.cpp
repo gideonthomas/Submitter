@@ -522,6 +522,7 @@ namespace sict {
       email += _AsVals["subject_code"][0] + " - ";
       email += name();
       email += " submission by `whoami`\" ";
+      email += " -Sreplyto=`whoami`@myseneca.ca ";
       for (int i = 0; i < _AsVals["submit_files"].size(); i++) {
          email += " -a " + _AsVals["submit_files"][i];
       }
@@ -531,7 +532,6 @@ namespace sict {
       else {
          email += " " + toEmail;
       }
-      email += " -Sreplyto=`whoami`@myseneca.ca";
 #ifdef SICT_DEBUGEMAIL
       cout << email << endl;
       return true;
