@@ -531,7 +531,7 @@ namespace sict {
       else {
          email += " " + toEmail;
       }
-      email += " -- -f `whoami`@myseneca.ca";
+      email += " -Sreplyto=`whoami`@myseneca.ca";
 #ifdef SICT_DEBUGEMAIL
       cout << email << endl;
       return true;
