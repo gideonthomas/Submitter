@@ -16,7 +16,11 @@ namespace sict {
       _argc = argc;
       _argv = argv;
       _home = argv[0];
+#ifdef SICT_DEBUG_ON_PC
+      size_t last = _home.find_last_of('\\');
+#else
       size_t last = _home.find_last_of('/');
+#endif
       if (last != string::npos) {
          _home = _home.substr(0, last + 1);
       }
@@ -58,7 +62,11 @@ namespace sict {
    bool Submitter::getAssignmentValues() {
       bool ok = false;
       Vals V('|');
+#ifdef SICT_DEBUG_ON_PC
+      std::string fname(_submitterDir + "\\" + _argv[1]);
+#else
       std::string fname(_submitterDir + "/" + _argv[1]);
+#endif
       fname += ".cfg";
       ifstream file(fname.c_str());
       while (file) {
@@ -78,7 +86,11 @@ namespace sict {
          int i;
          for (i = 0; ret && i < _AsVals["copy_files"].size(); i++) {
             Command cmd("cp ");
+#ifdef SICT_DEBUG_ON_PC
+            cmd += (_submitterDir + "\\" + _AsVals["copy_files"][i] + " .");
+#else
             cmd += (_submitterDir + "/" + _AsVals["copy_files"][i] + " .");
+#endif
             // cout << cmd << endl; // to show or not to show!
             ret = (cmd.run() == 0);
          }
@@ -327,7 +339,11 @@ namespace sict {
          if (sscanf(_AsVals["comp_range"][0].c_str(), "%d", &from) == 1
             && sscanf(_AsVals["comp_range"][1].c_str(), "%d", &to) == 1) {
             if (_AsVals.exist("correct_output")) {
-               if (Command("cp " + _submitterDir + "/" + _AsVals["correct_output"][0] + " .").run() == 0) {
+#ifdef SICT_DEBUG_ON_PC
+               if (Command("cp " + _submitterDir + "\\" + _AsVals["correct_output"][0] + " .").run() == 0) {
+#else
+              if (Command("cp " + _submitterDir + "/" + _AsVals["correct_output"][0] + " .").run() == 0) {
+#endif
                   if (!compareOutputs(from, to)) {
                      bad = 18;
                      cout << "Outputs don't match. Submission aborted!" << endl;

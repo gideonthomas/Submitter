@@ -15,6 +15,7 @@ namespace sict{
     cin.ignore(1000, '\n');
     return 0;
 # else
+    cout << "Running: " << c_str() << endl;
     return system(c_str());
 # endif
   }
