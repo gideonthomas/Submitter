@@ -9,7 +9,7 @@
 #include "SubVals.h"
 #include "Command.h"
 #include "Submitter.h"
-//#define SICT_DEBUG_SUBMITTER
+//#define SICT_DEBUG_ON_PC
 using namespace std;
 namespace sict {
    Submitter::Submitter(int argc, char** argv) :_cls("clear") {
@@ -20,7 +20,7 @@ namespace sict {
       if (last != string::npos) {
          _home = _home.substr(0, last + 1);
       }
-#ifdef SICT_DEBUG
+#ifdef SICT_DEBUG_ON_PC
       _home = "";
 #endif
       ok2submit = true;
@@ -209,9 +209,7 @@ namespace sict {
       for (int i = 0; !skip && i < skipNum; i++) {
          if (sscanf(_AsVals["comp_range"][i + 2].c_str(), "%d", &curLine) == 1 && curLine == lineNo) {
             skip = true;
-#ifdef SICT_DEBUG_SUBMITTER
-            cout << "Skipping line " << curLine << endl;
-#endif
+
          }
       }
       return skip;
@@ -238,11 +236,6 @@ namespace sict {
          if (!skipLine(line) && line >= from) {
             ok2submit = good = compare(sstr, pstr, line);
          }
-#ifdef SICT_DEBUG_SUBMITTER
-         else {
-            cout << "Skipping " << line << ": " << sstr << endl;
-         }
-#endif
       }
       if (line < from) {
          ok2submit = good = false;
@@ -397,9 +390,7 @@ namespace sict {
       int bad = 0;
       int i = 0;
       clrscr();
-#ifdef SICT_DEBUG_SUBMITTER
-      cout << "DEBUGGING SUBMITTER.........................................." << endl;
-#endif
+
       cout << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
       // if the command has valid format
       if (_argc != 2) {
