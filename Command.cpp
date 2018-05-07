@@ -12,6 +12,7 @@ namespace sict{
   int Command::run()const{
 # ifdef SICT_DEBUG
     cout <<"RUN: "<< c_str() << endl;
+    cin.ignore(1000, '\n');
     return 0;
 # else
     return system(c_str());
