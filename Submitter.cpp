@@ -9,7 +9,7 @@
 #include "SubVals.h"
 #include "Command.h"
 #include "Submitter.h"
-//#define SICT_DEBUG_ON_PC
+
 using namespace std;
 namespace sict {
    Submitter::Submitter(int argc, char** argv) :_cls("clear") {
@@ -323,7 +323,7 @@ namespace sict {
                << "Press <ENTER> to start...";
             cin.ignore(1000, '\n');
             clrscr();
-            Command("script " + _AsVals["output_file"][0] + " -c " + _AsVals["output_file"][0]).run();
+            Command("script " + _AsVals["output_file"][0] + " -c " + _AsVals["exe_name"][0]).run();
          }
          else {
             Command(_AsVals["exe_name"] + " >" + _AsVals["output_file"]).run();
