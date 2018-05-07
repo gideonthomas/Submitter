@@ -316,7 +316,8 @@ namespace sict {
             cout << "I am about to execute the tester and script the output to \"" << _AsVals["output_file"][0] << "\"" << endl;
             cout << "Please enter the values carefuly and exactly as instructed." << endl
                << "Press <ENTER> to start...";
-           
+            cin.ignore(1000, '\n');
+            clrscr();
             Command("script " + _AsVals["output_file"][0] + " -c " + _AsVals["output_file"][0]).run();
          }
          else {
