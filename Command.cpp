@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include "Command.h"
 
-# ifdef SICT_DEBUG
+# if defined(SICT_DEBUG) || defined(SHOW_COMMANDS)
 #   include <iostream>
 # endif
 
@@ -15,7 +15,9 @@ namespace sict{
     cin.ignore(1000, '\n');
     return 0;
 # else
+#ifdef SHOW_COMMANDS
     cout << "Running: " << c_str() << endl;
+#endif // DEBUG
     return system(c_str());
 # endif
   }

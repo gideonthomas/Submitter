@@ -5,9 +5,6 @@
 //#define SICT_DEBUG_ON_PC
 //#define SICT_DEBUGEMAIL // uncomment to print the email command instead of executing it
 //#define SHOW_COMMANDS
-#ifdef SHOW_COMMANDS
-#include <iostream>
-#endif // SHOW_COMMANDS
 
 #include <string>
 namespace sict{
