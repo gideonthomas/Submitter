@@ -318,11 +318,7 @@ namespace sict {
                << "Press <ENTER> to start...";
             cin.ignore(1000, '\n');
             clrscr();
-            cout << "FOLLOW THESE INSTRUCTIONS:" << endl;
-            cout << "1- Type " << _AsVals["exe_name"] << " and hit <ENTER>" << endl;
-            cout << "2- Use the test data specified in " << name() << " to test the program" << endl;
-            cout << "3- When done, type exit and hit <ENTER> to continue the submission process." << endl;
-            Command("script " + _AsVals["output_file"][0]).run();
+            Command("script " + _AsVals["output_file"][0] + " -c " + _AsVals["exe_name"][0]).run();
          }
          else {
             Command(_AsVals["exe_name"] + " >" + _AsVals["output_file"]).run();
@@ -539,7 +535,7 @@ namespace sict {
       return email.run() == 0;
 #endif
 
-    
+
    }
 }
 
