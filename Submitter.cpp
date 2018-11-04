@@ -337,7 +337,11 @@ namespace sict {
                if (Command("cp " + _submitterDir + "/" + _AsVals["correct_output"][0] + " .").run() == 0) {
                   if (!compareOutputs(from, to)) {
                      bad = 18;
-                     cout << "Outputs don't match. Submission aborted!" << endl;
+                     cout << "Outputs don't match. Submission aborted!" << endl << endl;
+                     cout << "To see exaclty what is wrong, open the following two files in this" << endl
+                       << "directory and compare them: " << endl
+                       << "Your output file:    " << _AsVals["output_file"][0].c_str() << endl
+                       << "Correct output file: " << _AsVals["correct_output"][0].c_str() << endl;
                   }
                   else {
                      cout << "Success!... Outputs match." << endl;
