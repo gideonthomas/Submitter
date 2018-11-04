@@ -9,7 +9,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98 AutoScript"
+#define SUBMITTER_VERSION "0.98.1 AutoScript/Output file names in error message"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -29,7 +29,7 @@ namespace sict{
     int _argc;
     char** _argv;
     std::string _home;
-    std::string _submitterDir;  
+    std::string _submitterDir;
     SubVals _AsVals;
     Command _cls;
     void setSubmitterDir();
@@ -44,9 +44,9 @@ namespace sict{
     int execute();
     int checkOutput();
     bool skipLine(int lineNo);
-    bool compareOutputs(int from, int to); 
+    bool compareOutputs(int from, int to);
     const char* name();
-    bool submit(std::string& toEmail, bool Confirmation = false); // if confirmation is ture then work will be submitted to student 
+    bool submit(std::string& toEmail, bool Confirmation = false); // if confirmation is ture then work will be submitted to student
     bool removeBS();
   public:
     Submitter(int argc, char** argv);
