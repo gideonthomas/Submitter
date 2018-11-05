@@ -16,6 +16,7 @@ namespace sict {
       _argc = argc;
       _argv = argv;
       _home = argv[0];
+      if (_argc >= 2) _configFileName = argv[1];
       size_t last = _home.find_last_of('/');
       if (last != string::npos) {
          _home = _home.substr(0, last + 1);
@@ -58,7 +59,7 @@ namespace sict {
    bool Submitter::getAssignmentValues() {
       bool ok = false;
       Vals V('|');
-      std::string fname(_submitterDir + "/" + _argv[1]);
+      std::string fname(_submitterDir + "/" + _configFileName);
       fname += ".cfg";
       ifstream file(fname.c_str());
       while (file) {
@@ -69,9 +70,6 @@ namespace sict {
          }
       }
       file.close();
-      if (ok) {
-        _configFileName.assign(_argv[1]);
-      }
       return ok;
    }
    bool Submitter::copyProfFiles() {
@@ -411,7 +409,7 @@ namespace sict {
       // if the command has valid format
       if (_argc != 2) {
          cout << "Error #1: submission command format: " << endl;
-         cout << "~prof_name.prof_lastname/submit AssignmentName<ENTER>" << endl;
+         cout << "~prof_name.prof_lastname/submit DeliverableName<ENTER>" << endl;
          bad = 1;
       }
       if (!bad) {
