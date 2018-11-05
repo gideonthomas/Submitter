@@ -9,7 +9,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98.1 AutoScript/Output file names in error message"
+#define SUBMITTER_VERSION "0.98.2 AutoScript/detailed missing config file error"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -30,6 +30,7 @@ namespace sict{
     char** _argv;
     std::string _home;
     std::string _submitterDir;
+    std::string _configFileName;
     SubVals _AsVals;
     Command _cls;
     void setSubmitterDir();

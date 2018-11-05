@@ -69,6 +69,9 @@ namespace sict {
          }
       }
       file.close();
+      if (ok) {
+        _configFileName.assign(_argv[1]);
+      }
       return ok;
    }
    bool Submitter::copyProfFiles() {
@@ -338,7 +341,7 @@ namespace sict {
                   if (!compareOutputs(from, to)) {
                      bad = 18;
                      cout << "Outputs don't match. Submission aborted!" << endl << endl;
-                     cout << "To see exaclty what is wrong, open the following two files in this" << endl
+                     cout << "To see exactly what is wrong, open the following two files in this" << endl
                        << "directory and compare them: " << endl
                        << "Your output file:    " << _AsVals["output_file"][0].c_str() << endl
                        << "Correct output file: " << _AsVals["correct_output"][0].c_str() << endl;
@@ -378,7 +381,7 @@ namespace sict {
    /*run returns:
    0 OK
    1 incorrect command line argument
-   2 can not open submitter specs file
+   2 can not open submission figuration file
    3 assessment name missing in assignment configuration file
    4 Student does not have all the files available in submission directory
    5 tester files missing in professor's directory or directory not accessible
@@ -416,8 +419,12 @@ namespace sict {
          setSubmitterDir();
          // get the assignment specs and put it in AsVals
          bad = int(!getAssignmentValues()) * 2;
-         bad && cout << "Error #2: Can not find the assignment submission sepcs!" << endl
-            << "Please report this to your professor!" << endl;
+         bad && cout << "Error #2:"<<endl<<"Can not find the assignment submission configuration: \"" <<_configFileName <<"\""<< endl
+            << "When issuing the submit command:" <<endl
+            << "~profName.profLastname/submit [deliverable_name]<ENTER>" <<endl
+            << "Doublecheck and make sure that the deliverable_name \"" << _configFileName << "\" is not misspelled." << endl
+            << "If still submission is not successful:" << endl
+            << "Include the submission command in an email and report it to your professor!" << endl;
       }
       if (!bad) {
          // if Assignment name is set in the assignment spcs files
