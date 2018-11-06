@@ -379,7 +379,7 @@ namespace sict {
    /*run returns:
    0 OK
    1 incorrect command line argument
-   2 can not open submission figuration file
+   2 cannot open submission figuration file
    3 assessment name missing in assignment configuration file
    4 Student does not have all the files available in submission directory
    5 tester files missing in professor's directory or directory not accessible
@@ -417,7 +417,7 @@ namespace sict {
          setSubmitterDir();
          // get the assignment specs and put it in AsVals
          bad = int(!getAssignmentValues()) * 2;
-         bad && cout << "Error #2:"<<endl<<"Can not submit delivarable: \"" <<_configFileName <<"\""<< endl
+         bad && cout << "Error #2:"<<endl<<"Cannot submit delivarable: \"" <<_configFileName <<"\""<< endl
             << "for the submit command: ~profName.profLastname/submit [deliverable_name]<ENTER>" <<endl
             << "Make sure the deliverable_name \"" << _configFileName << "\" is not misspelled." << endl
             << "If you continue to get this error message:" << endl
