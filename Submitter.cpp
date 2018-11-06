@@ -417,7 +417,7 @@ namespace sict {
          setSubmitterDir();
          // get the assignment specs and put it in AsVals
          bad = int(!getAssignmentValues()) * 2;
-         bad && cout << "Error #2:"<<endl<<"Can not find the submission configuration: \"" <<_configFileName <<"\""<< endl
+         bad && cout << "Error #2:"<<endl<<"Can not submit delivarable: \"" <<_configFileName <<"\""<< endl
             << "for the submit command: ~profName.profLastname/submit [deliverable_name]<ENTER>" <<endl
             << "Make sure the deliverable_name \"" << _configFileName << "\" is not misspelled." << endl
             << "If you continue to get this error message:" << endl
