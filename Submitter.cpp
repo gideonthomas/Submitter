@@ -146,10 +146,16 @@ namespace sict {
       i++;
     }
     os << "|" << endl;
-    os << "Professor's character ASCII code: hex(" << hex << int(prof[i])
+    os << endl << "Unmatched character details:" << endl;
+    os << "The character in column " << (i + 1) 
+       << " is supposed to be [" << charName(prof[i]) << "] ASCII code(" << int(prof[i]) << ")" << endl
+      << "but you printed [" << charName(stdnt[i]) << "] ASCII code(" << int(stdnt[i]) << ")" << endl << endl;
+
+  /* changed to the above 
+     os << "Professor's character ASCII code: hex(" << hex << int(prof[i])
       << "), dec(" << dec << int(prof[i]) << ")" << endl;
     os << "un-matched character ASCII code: hex(" << hex << int(stdnt[i])
-      << "), dec(" << dec << int(stdnt[i]) << ")" << endl;
+      << "), dec(" << dec << int(stdnt[i]) << ")" << endl;*/
 
   }
   bool Submitter::compare(const char* stdnt, const char* prof, int line) {
@@ -205,6 +211,50 @@ namespace sict {
       delete[] buf;
     }
     return good;
+  }
+  const char* Submitter::charName(int ch) {
+    static char chName[34][22] = {
+      "NULL",
+      "Start Of Heading",
+      "Start Of Text",
+      "End Of Text",
+      "End Of Transmission",
+      "Enquiry",
+      "Acknoledge",
+      "Bell (\\a)",
+      "Backspace (\\b)",
+      "Tab (\\t)",
+      "New Line (\\n)",
+      "Vertical Tab",
+      "Form Feed (\\f)",
+      "Carriage Retrun (\\r)",
+      "Shift out",
+      "Shift in",
+      "Data Link Escape",
+      "Device Control 1",
+      "Device Control 2",
+      "Device Control 3",
+      "Device Control 4",
+      "Negative Acknoledge",
+      "Synchronous Idle",
+      "End of Tran. Block",
+      "Cancel",
+      "End Of Medium",
+      "Substitude",
+      "Escape",
+      "File Separator",
+      "Groupu Separator",
+      "Record Separator",
+      "Unit Separator",
+      "Space",
+      "Non printable char"
+    };
+    if (ch >= 33) {
+      chName[33][0] = ch;
+      chName[33][1] = 0;
+      ch = 33;
+    }
+    return chName[ch];
   }
   bool Submitter::skipLine(int lineNo) {
     int skipNum = _AsVals["comp_range"].size() - 2;

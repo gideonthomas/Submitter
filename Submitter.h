@@ -59,6 +59,7 @@ namespace sict{
     const char* name();
     bool submit(std::string& toEmail, bool Confirmation = false); // if confirmation is ture then work will be submitted to student
     bool removeBS();
+    static const char* charName(int ch);
   public:
     Submitter(int argc, char** argv);
     int run();
