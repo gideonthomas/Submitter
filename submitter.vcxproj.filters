@@ -30,6 +30,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vals.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Submitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Date.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -58,9 +64,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="template.cfg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="submitter_files\244_fp_short.cfg">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

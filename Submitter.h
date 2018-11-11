@@ -3,13 +3,18 @@
 #include "Vals.h"
 #include "SubVals.h"
 #include "Command.h"
+#include "Date.h"
 // define statements
 
 //  version
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98.2 AutoScript/detailed missing config file error"
+#define SUBMITTER_VERSION "0.98.3 message revision and due date check"
+#ifdef SUBMITTER_DATE
+# undef SUBMITTER_DATE
+#endif
+#define SUBMITTER_DATE "11/Nov/2018"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -26,7 +31,12 @@
 namespace sict{
   class Submitter{
     bool ok2submit;
+    bool late;
+    bool superlate;
     int _argc;
+    Date now;
+    Date dueDate;
+    Date cutoffDate;
     char** _argv;
     std::string _home;
     std::string _submitterDir;
