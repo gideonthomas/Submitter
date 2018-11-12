@@ -132,7 +132,7 @@ namespace sict {
   }
   void Submitter::diff(ostream& os, const char* stdnt, const char* prof, int line) {
     int i = 0;
-    os << endl << "In line number " << line << " of your output:" << endl;
+    os << "In line number " << line << " of your output:" << endl;
     os << "The output should be:" << endl << Line(prof) << endl;
     os << "But your output is: " << endl << Line(stdnt) << endl;
     while (stdnt[i] && prof[i] && stdnt[i] == prof[i]) {
