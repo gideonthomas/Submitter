@@ -411,7 +411,7 @@ namespace sict {
               cout << "To see exactly what is wrong, open the following two files in this" << endl
                 << "directory and compare them: " << endl
                 << "Your output file:    " << _AsVals["output_file"][0].c_str() << endl
-                << "Correct output file: " << _AsVals["correct_output"][0].c_str() << endl;
+                << "Correct output file: " << _AsVals["correct_output"][0].c_str() << endl << endl;
             }
             else {
               cout << "Success!... Outputs match." << endl;
