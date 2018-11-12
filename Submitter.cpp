@@ -148,8 +148,8 @@ namespace sict {
     os << "|" << endl;
     os << endl << "Unmatched character details:" << endl;
     os << "The character in column " << (i + 1) 
-       << " is supposed to be [" << charName(int(prof[i])) << "] ASCII code(" << int(prof[i]) << ")" << endl
-      << "but you printed [" << stdnt[i] << " " <<charName(int(stdnt[i])) << "] ASCII code(" << int(stdnt[i]) << ")" << endl << endl;
+       << " is supposed to be [" << charName(prof[i]) << "] ASCII code(" << int(prof[i]) << ")" << endl
+      << "but you printed [" << stdnt[i] << " " <<charName(stdnt[i]) << "] ASCII code(" << int(stdnt[i]) << ")" << endl << endl;
 
   /* changed to the above 
      os << "Professor's character ASCII code: hex(" << hex << int(prof[i])
@@ -212,7 +212,7 @@ namespace sict {
     }
     return good;
   }
-  const char* Submitter::charName(int ch) {
+  const char* Submitter::charName(char ch) {
     static char chName[34][39] = {
       "NULL",
       "Start Of Heading",
@@ -251,7 +251,7 @@ namespace sict {
     };
     if (ch >= 33) {
       chName[33][0] = ch;
-      chName[33][1] = 0;
+      chName[33][1] = '\0';
       ch = 33;
     }
     return chName[ch];
