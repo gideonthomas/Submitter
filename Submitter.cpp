@@ -254,7 +254,7 @@ namespace sict {
       chName[33][1] = '\0';
       ch = 33;
     }
-    return chName[ch];
+    return chName[int(ch)];
   }
   bool Submitter::skipLine(int lineNo) {
     int skipNum = _AsVals["comp_range"].size() - 2;
