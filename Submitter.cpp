@@ -154,7 +154,7 @@ namespace sict {
       os << stdnt[i];
     }
     else {
-      os << charName(prof[i]);
+      os << charName(stdnt[i]);
     }
     os << "] ASCII code(" << int(stdnt[i]) << ")" << endl << endl;
 
@@ -234,7 +234,7 @@ namespace sict {
       "New Line (\\n)",
       "Vertical Tab",
       "Form Feed (\\f)",
-      "Carriage Retrun (\\r) or Newline (\\n)",
+      "Newline (\\n) or Carriage Retrun (\\r)",
       "Shift out",
       "Shift in",
       "Data Link Escape",
