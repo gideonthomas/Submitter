@@ -148,8 +148,8 @@ namespace sict {
     os << "|" << endl;
     os << endl << "Unmatched character details:" << endl;
     os << "The character in column " << (i + 1)
-      << " is supposed to be [" << charName(prof[i]) << "] ASCII code(" << int(prof[i]) << ")" << endl
-      << "but you printed [";
+      << " is supposed to be:" << endl << "[" << charName(prof[i]) << "] ASCII code(" << int(prof[i]) << ")" << endl
+      << "but you printed" << endl << "[";
     if (stdnt[i] >= 33) {
       os << stdnt[i];
     }
