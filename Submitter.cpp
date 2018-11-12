@@ -471,7 +471,8 @@ namespace sict {
     cout << "DEBUGGING SUBMITTER.........................................." << endl;
 #endif
     cout << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
-    cout << "by Fardad S. (Last update: " << SUBMITTER_DATE << ")" << endl;
+    cout << "by Fardad S. (Last update: " << SUBMITTER_DATE << ")" << endl
+      << "===============================================================" << endl << endl;
     // if the command has valid format
     if (_argc != 2) {
       cout << "Error #1: submission command format: " << endl;
