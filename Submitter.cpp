@@ -561,7 +561,7 @@ namespace sict {
       }
 
       if (!bad && _AsVals.exist("due_dates")) {
-        cout << endl << "Checking due date:" << endl;
+        cout << endl << "Checking due date: ";
         bool dueOnly = _AsVals["due_dates"].size() < 2;
         std::stringstream ssDue;
         ssDue << _AsVals["due_dates"][0];
@@ -574,6 +574,7 @@ namespace sict {
         else {
           if (now > dueDate) {
             late = true;
+            cout << "LATE!" << endl;
           }
         }
         if (!bad && !dueOnly) {
@@ -588,23 +589,30 @@ namespace sict {
           else {
             if (now > cutoffDate) {
               superlate = true;
+              cout << "SUPER-LATE!" << endl;
             }
           }
+          if (!bad && !(late || superlate)) {
+            cout << "ON TIME." << endl;
+          }
         }
-        if (!(late || superlate)) {
-          cout << "On time submission." << endl;
-        }
+        
       }
 
       if (!bad && ok2submit) {
         if (_AsVals.exist("submit_files")) {
-          if (superlate) {
-            cout << "*** This is a SUPER-LATE submission. ***" << endl << "The submission cutoff date was: " << cutoffDate << endl;
-          }
-          else if (late) {
-            cout << "*** This is a LATE submission; the due date was: " << dueDate << " ***" << endl;
-          }
           cout << endl << "Submission: " << endl;
+          if (!bad && _AsVals.exist("due_dates")) {
+            if (superlate) {
+              cout << "*** This is a SUPER-LATE submission. ***" << endl << "The submission cutoff date was: " << cutoffDate << endl;
+            }
+            else if (late) {
+              cout << "*** This is a LATE submission; the due date was: " << dueDate << " ***" << endl;
+            }
+            else {
+              cout << "On time submission, due date: " << dueDate << endl;
+            }
+          }
           cout << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
           if (yes()) {
             if (submit(_AsVals["prof_email"][0])) {
