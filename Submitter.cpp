@@ -561,7 +561,7 @@ namespace sict {
       }
 
       if (!bad && _AsVals.exist("due_dates")) {
-        cout << endl << "Checking due date: ";
+        cout << endl << "Checking due date:" << endl ;
         bool dueOnly = _AsVals["due_dates"].size() < 2;
         std::stringstream ssDue;
         ssDue << _AsVals["due_dates"][0];
