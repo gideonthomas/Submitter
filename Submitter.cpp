@@ -315,6 +315,9 @@ namespace sict {
     int bad = 0;
     int i = 0;
     int errcode = 0;
+#ifdef SICT_DEBUG
+    return 0;
+#endif // SICT_DEBUG
 
     if (_AsVals.exist("compile_command")) {
       Command compile(_AsVals["compile_command"][1]);
@@ -469,6 +472,7 @@ namespace sict {
   19 the linux mail command failed at the end
   20 bad due date format in config file
   21 bad cutoff date format in config file
+  23 bad rejection date format in config file
   */
   int Submitter::run() {
     int bad = 0;
@@ -494,141 +498,161 @@ namespace sict {
       bad && cout << "Error #2:" << endl << "Cannot submit delivarable: \"" << _configFileName << "\" "
         << "for the submit command:" << endl << endl << "   ~profName.profLastname/submit [deliverable_name]<ENTER>" << endl << endl
         << "Make sure the deliverable_name \"" << _configFileName << "\" is not misspelled." << endl
-        << "If you continue to get this error message, include the submission"<< endl 
-        <<"command in an email and report it to your professor!" << endl;
+        << "If you continue to get this error message, include the submission" << endl
+        << "command in an email and report it to your professor!" << endl;
     }
-    if (!bad) {
-      // if Assignment name is set in the assignment spcs files
-      if (_AsVals.exist("assessment_name")) {
-        if (_AsVals.exist("submit_files")) {
-          cout << "Submitting:" << endl << name() << endl << endl;
-        }
-        else {
-          cout << "Testing:" << endl << name() << endl << endl;
-        }
+    if (_AsVals.exist("due_dates") && _AsVals["due_dates"].size() == 3) {
+      std::stringstream ssReject;
+      ssReject << _AsVals["due_dates"][2] << "-23:59";
+      rejectionDate.read(ssReject);
+      if (rejectionDate.bad()) {
+        cout << "Bad rejection date format in config file." << endl
+          << "Please report this to your professor." << endl;
+        bad = 22;
       }
-      else { // otherwise exit with error
-        cout << "Error #3: \"assessment_name\" is not specified!" << endl
-          << "please report this to your professor!" << endl;
-        bad = 3;
-      }
-    }
-    if (!bad) {
-      // check to make sure all files to be submitted is in
-      // the currect dir.
-      // fileExist function already prints the name of missing files
-      bad = int(!filesExist()) * 4;
-      bad && cout << "Error #4: submission files missing." << endl;
-      ok2submit = !bad;
-    }
-    if (!bad) {
-      bad = int(!copyProfFiles()) * 5;
-      bad && cout << "Error #5: Could not copy tester files!" << endl << "Please report this to your professor!" << endl;
-    }
-    if (!bad && _AsVals["compile"][0] == "yes") {
-      if ((bad = compile()) == 0) {
-        cout << "Success! no errors or warnings..." << endl;
+      else if (now > rejectionDate) {
+        cout << "*** Submission Rejected! ***" << endl
+          << "The deadline for this submission has passed(Due: " << rejectionDate << ")." << endl
+          << "If you believe this to be an error, please discuss with your professor." << endl;
+        ok2submit = false;
       }
     }
-    if (!bad && _AsVals["execute"][0] == "yes") {
-      cout << endl << "Testing execution:";
-      bad = execute();
-    }
-    if (!bad && _AsVals["check_output"][0] == "yes") {
-      cout << endl << "Checking output:" << endl;
-      bad = checkOutput();
-    }
-
-    if (!bad && _AsVals.exist("due_dates")) {
-      cout << endl << "Checking due date:" << endl;
-      bool dueOnly = _AsVals["due_dates"].size() < 2;
-      std::stringstream ssDue;
-      ssDue << _AsVals["due_dates"][0];
-      dueDate.read(ssDue);
-      if (dueDate.bad()) {
-        cout << "Error #20: bad due date format in config file." << endl
-          << "Please report this to your professor!" << endl;
-      }
-      else {
-        if (now > dueDate) {
-          late = true;
-        }
-      }
-      if (!dueOnly) {
-        std::stringstream ssCut;
-        ssCut << _AsVals["due_dates"][1] << "-23:59";
-        cutoffDate.read(ssCut);
-        if (cutoffDate.bad()) {
-          cout << "Error #21: bad cutoff date format in config file." << endl
-            << "Please report this to your professor!" << endl;
-        }
-        else {
-          if (now > cutoffDate) {
-            superlate = true;
-          }
-        }
-      }
-      if (!(late || superlate)) {
-        cout << "On time submission." << endl;
-      }
-    }
-
-    if (!bad && ok2submit) {
-      if (_AsVals.exist("submit_files")) {
-        if (superlate) {
-          cout << "This is a SUPER-LATE submission." <<endl << "The submission cutoff date was: " << cutoffDate << endl;
-        }
-        else if (late) {
-          cout << "This is a LATE submission; the due date was: " << dueDate << endl;
-        }
-        cout << endl <<  "Submission: " << endl;
-        cout <<  "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
-        if (yes()) {
-          if (submit(_AsVals["prof_email"][0])) {
-            cout << "Thank you!, Your work is now submitted." << endl;
+    if (ok2submit) {
+      if (!bad) {
+        // if Assignment name is set in the assignment spcs files
+        if (_AsVals.exist("assessment_name")) {
+          if (_AsVals.exist("submit_files")) {
+            cout << "Submitting:" << endl << name() << endl << endl;
           }
           else {
-            bad = 19;
-            cout << "Error #19: email failed." << endl
-              << "Please report this to your professor" << endl;
+            cout << "Testing:" << endl << name() << endl << endl;
           }
-          if (!bad) {
-            if (!_AsVals.exist("CC_student") || _AsVals["CC_student"][0] == "yes") {
-              cout << endl << "Would you like to receive a confirmation email for this submission? (Y)es/(N)o: ";
+        }
+        else { // otherwise exit with error
+          cout << "Error #3: \"assessment_name\" is not specified!" << endl
+            << "please report this to your professor!" << endl;
+          bad = 3;
+        }
+      }
+      if (!bad) {
+        // check to make sure all files to be submitted is in
+        // the currect dir.
+        // fileExist function already prints the name of missing files
+        bad = int(!filesExist()) * 4;
+        bad && cout << "Error #4: submission files missing." << endl;
+        ok2submit = !bad;
+      }
+      if (!bad) {
+        bad = int(!copyProfFiles()) * 5;
+        bad && cout << "Error #5: Could not copy tester files!" << endl << "Please report this to your professor!" << endl;
+      }
+      if (!bad && _AsVals["compile"][0] == "yes") {
+        if ((bad = compile()) == 0) {
+          cout << "Success! no errors or warnings..." << endl;
+        }
+      }
+      if (!bad && _AsVals["execute"][0] == "yes") {
+        cout << endl << "Testing execution:";
+        bad = execute();
+      }
+      if (!bad && _AsVals["check_output"][0] == "yes") {
+        cout << endl << "Checking output:" << endl;
+        bad = checkOutput();
+      }
+
+      if (!bad && _AsVals.exist("due_dates")) {
+        cout << endl << "Checking due date:" << endl;
+        bool dueOnly = _AsVals["due_dates"].size() < 2;
+        std::stringstream ssDue;
+        ssDue << _AsVals["due_dates"][0];
+        dueDate.read(ssDue);
+        if (dueDate.bad()) {
+          cout << "Error #20: bad due date format in config file." << endl
+            << "Please report this to your professor!" << endl;
+          bad = 20;
+        }
+        else {
+          if (now > dueDate) {
+            late = true;
+          }
+        }
+        if (!bad && !dueOnly) {
+          std::stringstream ssCut;
+          ssCut << _AsVals["due_dates"][1] << "-23:59";
+          cutoffDate.read(ssCut);
+          if (cutoffDate.bad()) {
+            cout << "Error #21: bad cutoff date format in config file." << endl
+              << "Please report this to your professor!" << endl;
+            bad = 21;
+          }
+          else {
+            if (now > cutoffDate) {
+              superlate = true;
+            }
+          }
+        }
+        if (!(late || superlate)) {
+          cout << "On time submission." << endl;
+        }
+      }
+
+      if (!bad && ok2submit) {
+        if (_AsVals.exist("submit_files")) {
+          if (superlate) {
+            cout << "*** This is a SUPER-LATE submission. ***" << endl << "The submission cutoff date was: " << cutoffDate << endl;
+          }
+          else if (late) {
+            cout << "*** This is a LATE submission; the due date was: " << dueDate << " ***" << endl;
+          }
+          cout << endl << "Submission: " << endl;
+          cout << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
+          if (yes()) {
+            if (submit(_AsVals["prof_email"][0])) {
+              cout << "Thank you!, Your work is now submitted." << endl;
+            }
+            else {
+              bad = 19;
+              cout << "Error #19: email failed." << endl
+                << "Please report this to your professor" << endl;
+            }
+            if (!bad) {
+              if (!_AsVals.exist("CC_student") || _AsVals["CC_student"][0] == "yes") {
+                cout << endl << "Would you like to receive a confirmation email for this submission? (Y)es/(N)o: ";
+                if (yes()) {
+                  if (submit(_AsVals["prof_email"][0], true)) {
+                    cout << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << endl;
+                  }
+                  else {
+                    bad = 19;
+                    cout << "Error #19: confirmation email failed." << endl
+                      << "Please report this to your professor" << endl;
+                  }
+                }
+              }
+            }
+            if (!bad && _AsVals["prof_email"].size() > 1) {
+              cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
               if (yes()) {
-                if (submit(_AsVals["prof_email"][0], true)) {
-                  cout << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << endl;
-                }
-                else {
-                  bad = 19;
-                  cout << "Error #19: confirmation email failed." << endl
-                    << "Please report this to your professor" << endl;
+                for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
+                  if (submit(_AsVals["prof_email"][i])) {
+                    cout << "CC no " << i << " is sent to the TA for feedback." << endl;
+                  }
+                  else {
+                    bad = 19;
+                    cout << "Error #19: email CC failed." << endl
+                      << "Please report this to your professor" << endl;
+                  }
                 }
               }
             }
           }
-          if (!bad && _AsVals["prof_email"].size() > 1) {
-            cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
-            if (yes()) {
-              for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
-                if (submit(_AsVals["prof_email"][i])) {
-                  cout << "CC no " << i << " is sent to the TA for feedback." << endl;
-                }
-                else {
-                  bad = 19;
-                  cout << "Error #19: email CC failed." << endl
-                    << "Please report this to your professor" << endl;
-                }
-              }
-            }
+          else {
+            cout << "Submission aborted by user!" << endl;
           }
         }
         else {
-          cout << "Submission aborted by user!" << endl;
+          cout << "Test Successful!" << endl;
         }
-      }
-      else {
-        cout << "Test Successful!" << endl;
       }
     }
     return bad;

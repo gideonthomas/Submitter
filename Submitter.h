@@ -10,11 +10,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98.3 message revision and due date check"
+#define SUBMITTER_VERSION "0.98.4 Added rejection date"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "11/Nov/2018"
+#define SUBMITTER_DATE "15/Nov/2018"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -37,6 +37,7 @@ namespace sict{
     Date now;
     Date dueDate;
     Date cutoffDate;
+    Date rejectionDate;
     char** _argv;
     std::string _home;
     std::string _submitterDir;
