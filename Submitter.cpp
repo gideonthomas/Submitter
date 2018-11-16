@@ -574,7 +574,6 @@ namespace sict {
         else {
           if (now > dueDate) {
             late = true;
-            cout << "LATE!" << endl;
           }
         }
         if (!bad && !dueOnly) {
@@ -589,14 +588,20 @@ namespace sict {
           else {
             if (now > cutoffDate) {
               superlate = true;
-              cout << "SUPER-LATE!" << endl;
             }
           }
-          if (!bad && !(late || superlate)) {
+        }
+        if (!bad) {
+          if (superlate) {
+            cout << "SUPER-LATE!" << endl;
+          }
+          else if (late) {
+            cout << "LATE!" << endl;
+          }
+          else {
             cout << "ON TIME." << endl;
           }
         }
-        
       }
 
       if (!bad && ok2submit) {
