@@ -3,13 +3,18 @@
 #include "Vals.h"
 #include "SubVals.h"
 #include "Command.h"
+#include "Date.h"
 // define statements
 
 //  version
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98.1 AutoScript/Output file names in error message"
+#define SUBMITTER_VERSION "0.98.4 Added rejection date"
+#ifdef SUBMITTER_DATE
+# undef SUBMITTER_DATE
+#endif
+#define SUBMITTER_DATE "15/Nov/2018"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -26,10 +31,17 @@
 namespace sict{
   class Submitter{
     bool ok2submit;
+    bool late;
+    bool superlate;
     int _argc;
+    Date now;
+    Date dueDate;
+    Date cutoffDate;
+    Date rejectionDate;
     char** _argv;
     std::string _home;
     std::string _submitterDir;
+    std::string _configFileName;
     SubVals _AsVals;
     Command _cls;
     void setSubmitterDir();
@@ -48,6 +60,7 @@ namespace sict{
     const char* name();
     bool submit(std::string& toEmail, bool Confirmation = false); // if confirmation is ture then work will be submitted to student
     bool removeBS();
+    static const char* charName(char ch);
   public:
     Submitter(int argc, char** argv);
     int run();

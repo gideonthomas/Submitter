@@ -78,12 +78,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
+    <ClInclude Include="Date.h" />
     <ClInclude Include="Submitter.h" />
     <ClInclude Include="SubVals.h" />
     <ClInclude Include="Vals.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Command.cpp" />
+    <ClCompile Include="Date.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Submitter.cpp" />
     <ClCompile Include="SubVals.cpp" />
@@ -94,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="submitter.cfg" />
-    <None Include="submitter_files\244_fp_short.cfg" />
     <None Include="submitter_files\w1.cfg" />
     <None Include="template.cfg" />
   </ItemGroup>
