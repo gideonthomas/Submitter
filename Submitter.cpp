@@ -675,10 +675,10 @@ namespace sict {
     Command email("echo \"");
     email += name();
     if (superlate) {
-      email += " superlate";
+      email += " Superlate";
     }
     else if (late) {
-      email += " late";
+      email += " Late";
     }
     email += " submission";
     if (Confirmation) email += " confirmation";
