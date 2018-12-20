@@ -675,10 +675,10 @@ namespace sict {
     Command email("echo \"");
     email += name();
     if (superlate) {
-      email += " «superlate»";
+      email += " superlate";
     }
     else if (late) {
-      email += " «late»";
+      email += " late";
     }
     email += " submission";
     if (Confirmation) email += " confirmation";
@@ -688,10 +688,10 @@ namespace sict {
     email += _AsVals["subject_code"][0] + " - ";
     email += name();
     if (superlate) {
-      email += " «superlate»";
+      email += " superlate";
     }
     else if (late) {
-      email += " «late»";
+      email += " late";
     }
     email += " submission by `whoami`\" ";
     email += " -Sreplyto=`whoami`@myseneca.ca ";
