@@ -278,7 +278,7 @@ namespace sict {
     return skip;
   }
   bool Submitter::compareOutputs(int from, int to) {
-    char sstr[512], pstr[512];
+    char sstr[4096], pstr[4096];
     bool good = true;
     int line = 0;
     ifstream stfile(_AsVals["output_file"][0].c_str());
@@ -294,8 +294,8 @@ namespace sict {
     while (line < to && good && stfile && prfile) {
       line++;
       sstr[0] = pstr[0] = 0;
-      stfile.getline(sstr, 255, '\n');
-      prfile.getline(pstr, 255, '\n');
+      stfile.getline(sstr, 4095, '\n');
+      prfile.getline(pstr, 4095, '\n');
       if (!skipLine(line) && line >= from) {
         ok2submit = good = compare(sstr, pstr, line);
       }
@@ -675,10 +675,10 @@ namespace sict {
     Command email("echo \"");
     email += name();
     if (superlate) {
-      email += " superlate";
+      email += " «superlate»";
     }
     else if (late) {
-      email += " late";
+      email += " «late»";
     }
     email += " submission";
     if (Confirmation) email += " confirmation";
@@ -688,10 +688,10 @@ namespace sict {
     email += _AsVals["subject_code"][0] + " - ";
     email += name();
     if (superlate) {
-      email += " superlate";
+      email += " «superlate»";
     }
     else if (late) {
-      email += " late";
+      email += " «late»";
     }
     email += " submission by `whoami`\" ";
     email += " -Sreplyto=`whoami`@myseneca.ca ";

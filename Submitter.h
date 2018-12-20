@@ -10,11 +10,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98.4 Added rejection date"
+#define SUBMITTER_VERSION "0.98.5 fixed extra long lines"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "15/Nov/2018"
+#define SUBMITTER_DATE "20/Dec/2018"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
