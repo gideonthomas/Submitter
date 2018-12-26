@@ -674,7 +674,7 @@ namespace sict {
   bool Submitter::submit(string& toEmail, bool Confirmation) {
     Command email("echo \"");
     email += name();
-    if (superlate) {
+    if (superlate) {   // body
       email += " Superlate";
     }
     else if (late) {
@@ -687,7 +687,7 @@ namespace sict {
     email += "\" | mail -s \"";
     email += _AsVals["subject_code"][0] + " - ";
     email += name();
-    if (superlate) {
+    if (superlate) {  // subject line
       email += " superlate";
     }
     else if (late) {
