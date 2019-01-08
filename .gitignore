@@ -11,6 +11,7 @@ Debug/
 *.opensdf
 Debug/
 ipch/
+.vs/
 
 # Compiled Object files
 *.slo
