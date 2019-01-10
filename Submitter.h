@@ -32,7 +32,7 @@ namespace sict{
   class Submitter{
     bool ok2submit;
     bool late;
-    bool superlate;
+    std::string lateTitle;
     int _argc;
     Date now;
     Date dueDate;

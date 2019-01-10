@@ -27,7 +27,7 @@ namespace sict {
     _home = "";
 #endif
     ok2submit = true;
-    late = superlate = false;
+    late = false;
   }
   void Submitter::clrscr()const {
     _cls.run();
@@ -299,11 +299,6 @@ namespace sict {
       if (!skipLine(line) && line >= from) {
         ok2submit = good = compare(sstr, pstr, line);
       }
-#ifdef SICT_DEBUG_SUBMITTER
-      else {
-        cout << "Skipping " << line << ": " << sstr << endl;
-      }
-#endif
     }
     if (line < from) {
       ok2submit = good = false;
@@ -401,7 +396,6 @@ namespace sict {
   int Submitter::checkOutput() {
     int bad = 0;
     int from = 0, to = 0;
-#ifndef SICT_DEBUG
     if (!removeBS()) bad = 17;
     if (!bad && _AsVals.exist("comp_range")) {
       if (sscanf(_AsVals["comp_range"][0].c_str(), "%d", &from) == 1
@@ -442,7 +436,6 @@ namespace sict {
         << "please report this to your professor!" << endl;
       bad = 13;
     }
-#endif // !SICT_DEBUG
     return bad;
   }
   const char* Submitter::name() {
@@ -471,7 +464,7 @@ namespace sict {
   18 output comparison failed
   19 the linux mail command failed at the end
   20 bad due date format in config file
-  21 bad cutoff date format in config file
+  21 bad due date and late title sequence in config file
   23 bad rejection date format in config file
   */
   int Submitter::run() {
@@ -501,9 +494,9 @@ namespace sict {
         << "If you continue to get this error message, include the submission" << endl
         << "command in an email and report it to your professor!" << endl;
     }
-    if (_AsVals.exist("due_dates") && _AsVals["due_dates"].size() == 3) {
+    if (_AsVals.exist("rejection_date")) {
       std::stringstream ssReject;
-      ssReject << _AsVals["due_dates"][2] << "-23:59";
+      ssReject << _AsVals["rejection_date"][0];
       rejectionDate.read(ssReject);
       if (rejectionDate.bad()) {
         cout << "Bad rejection date format in config file." << endl
@@ -534,6 +527,7 @@ namespace sict {
           bad = 3;
         }
       }
+
       if (!bad) {
         // check to make sure all files to be submitted is in
         // the currect dir.
@@ -546,6 +540,48 @@ namespace sict {
         bad = int(!copyProfFiles()) * 5;
         bad && cout << "Error #5: Could not copy tester files!" << endl << "Please report this to your professor!" << endl;
       }
+
+
+      if (!bad && _AsVals.exist("due_dates")) {
+        int li = _AsVals["due_dates"].size();
+        if (li % 2 == 0) {
+          std::stringstream ssDue;
+          cout << endl << "Checking due date:" << endl;
+          late = false;
+          while (!late && !bad && li > 0) {
+            ssDue.clear();
+            ssDue.str(std::string());
+            lateTitle = _AsVals["due_dates"][--li];
+            ssDue << _AsVals["due_dates"][--li];
+            dueDate.read(ssDue);
+            if (dueDate.bad()) {
+              cout << "Error #20: bad due date format in config file." << endl
+                << "Please report this to your professor!" << endl;
+              bad = 20;
+            }
+            if (now > dueDate) {
+              late = true;
+            }
+          }
+        }
+        else {
+          cout << "Error #21: bad due date and late title sequence in config file." << endl
+            << "Please report this to your professor!" << endl;
+          bad = 20;
+        }
+        if (!bad) {
+          if (late) {
+            if (lateTitle.length() == 0) lateTitle.assign("LATE");
+            cout << lateTitle << "!" << endl;
+          }
+          else {
+            cout << "ON TIME." << endl;
+          }
+        }
+      }
+
+
+
       if (!bad && _AsVals["compile"][0] == "yes") {
         if ((bad = compile()) == 0) {
           cout << "Success! no errors or warnings..." << endl;
@@ -560,59 +596,12 @@ namespace sict {
         bad = checkOutput();
       }
 
-      if (!bad && _AsVals.exist("due_dates")) {
-        cout << endl << "Checking due date:" << endl ;
-        bool dueOnly = _AsVals["due_dates"].size() < 2;
-        std::stringstream ssDue;
-        ssDue << _AsVals["due_dates"][0];
-        dueDate.read(ssDue);
-        if (dueDate.bad()) {
-          cout << "Error #20: bad due date format in config file." << endl
-            << "Please report this to your professor!" << endl;
-          bad = 20;
-        }
-        else {
-          if (now > dueDate) {
-            late = true;
-          }
-        }
-        if (!bad && !dueOnly) {
-          std::stringstream ssCut;
-          ssCut << _AsVals["due_dates"][1] << "-23:59";
-          cutoffDate.read(ssCut);
-          if (cutoffDate.bad()) {
-            cout << "Error #21: bad cutoff date format in config file." << endl
-              << "Please report this to your professor!" << endl;
-            bad = 21;
-          }
-          else {
-            if (now > cutoffDate) {
-              superlate = true;
-            }
-          }
-        }
-        if (!bad) {
-          if (superlate) {
-            cout << "SUPER-LATE!" << endl;
-          }
-          else if (late) {
-            cout << "LATE!" << endl;
-          }
-          else {
-            cout << "ON TIME." << endl;
-          }
-        }
-      }
-
       if (!bad && ok2submit) {
         if (_AsVals.exist("submit_files")) {
           cout << endl << "Submission: " << endl;
           if (!bad && _AsVals.exist("due_dates")) {
-            if (superlate) {
-              cout << "*** This is a SUPER-LATE submission. ***" << endl << "The submission cutoff date was: " << cutoffDate << endl;
-            }
-            else if (late) {
-              cout << "*** This is a LATE submission; the due date was: " << dueDate << " ***" << endl;
+            if (late) {
+              cout << "*** This is a " << lateTitle << " submission; the due date was: " << dueDate << " ***" << endl;
             }
             else {
               cout << "On time submission, due date: " << dueDate << endl;
@@ -674,11 +663,9 @@ namespace sict {
   bool Submitter::submit(string& toEmail, bool Confirmation) {
     Command email("echo \"");
     email += name();
-    if (superlate) {   // body
-      email += " Superlate";
-    }
-    else if (late) {
-      email += " Late";
+    if (late) {
+      email += " ";
+      email += lateTitle;
     }
     email += " submission";
     if (Confirmation) email += " confirmation";
@@ -687,18 +674,14 @@ namespace sict {
     email += "\" | mail -s \"";
     email += _AsVals["subject_code"][0] + " - ";
     email += name();
-    if (superlate) {  // subject line
-      email += " superlate";
-    }
-    else if (late) {
-      email += " late";
+    if (late) {
+      email += " ";
+      email += lateTitle;
     }
     email += " submission by `whoami`\" ";
     email += " -Sreplyto=`whoami`@myseneca.ca ";
-    if (!Confirmation) {
-      for (int i = 0; i < _AsVals["submit_files"].size(); i++) {
-        email += " -a " + _AsVals["submit_files"][i];
-      }
+    for (int i = 0; i < _AsVals["submit_files"].size(); i++) {
+      email += " -a " + _AsVals["submit_files"][i];
     }
     if (Confirmation) { // send email to student from prof and ingore the toEmail argument
       email += " `whoami`@myseneca.ca";
