@@ -1,5 +1,6 @@
 #ifndef SICT_SUBMITTER_H_
 #define SICT_SUBMITTER_H_
+#include "debug.h"
 #include "Vals.h"
 #include "SubVals.h"
 #include "Command.h"
@@ -42,12 +43,14 @@ namespace sict{
     std::string _home;
     std::string _submitterDir;
     std::string _configFileName;
-    SubVals _AsVals;
+    SubVals _asVals;
+   /* SubVals _subVals;*/
     Command _cls;
     void setSubmitterDir();
     void clrscr()const;
     bool yes()const;
     bool getAssignmentValues();
+    /*bool getSubmitterValues();  for future global config settings like color */
     bool copyProfFiles();
     bool filesExist();
     static bool compare(const char* stdnt, const char* prof, int line);
@@ -59,7 +62,7 @@ namespace sict{
     bool compareOutputs(int from, int to);
     const char* name();
     bool submit(std::string& toEmail, bool Confirmation = false); // if confirmation is ture then work will be submitted to student
-    bool removeBS();
+    bool removeBS(const char* filename);
     static const char* charName(char ch);
   public:
     Submitter(int argc, char** argv);

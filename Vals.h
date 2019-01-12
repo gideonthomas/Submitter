@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
+#include "debug.h"
 namespace sict{
   // a class to parse and hold delimeter seperated values
   // a delimeter can not be a white space character

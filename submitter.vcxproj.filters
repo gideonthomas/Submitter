@@ -50,9 +50,21 @@
     <ClInclude Include="Date.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="vals.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="working_dir\submitter_files\message.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="notes.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
@@ -64,6 +76,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="template.cfg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="working_dir\submitter_files\theProj.cfg">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

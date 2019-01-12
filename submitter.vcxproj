@@ -77,8 +77,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="colors.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Date.h" />
+    <ClInclude Include="debug.h" />
     <ClInclude Include="Submitter.h" />
     <ClInclude Include="SubVals.h" />
     <ClInclude Include="Vals.h" />
@@ -92,12 +94,15 @@
     <ClCompile Include="Vals.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="notes.txt" />
     <Text Include="vals.txt" />
+    <Text Include="working_dir\submitter_files\message.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="submitter.cfg" />
     <None Include="submitter_files\w1.cfg" />
     <None Include="template.cfg" />
+    <None Include="working_dir\submitter_files\theProj.cfg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,7 +11,8 @@
 #include "Command.h"
 #include "Submitter.h"
 #include "Date.h"
-//#define SICT_DEBUG_SUBMITTER
+#include "colors.h"
+
 using namespace std;
 namespace sict {
   Submitter::Submitter(int argc, char** argv) :_cls("clear") {
@@ -30,13 +31,18 @@ namespace sict {
     late = false;
   }
   void Submitter::clrscr()const {
+#ifdef SICT_DEBUG
+    system("cls");
+#else
     _cls.run();
+#endif
+
   }
   bool Submitter::yes()const {
     char res = cin.get();
     cin.ignore(1000, '\n');
     while (res != 'Y' && res != 'y' && res != 'N' && res != 'n') {
-      cout << "Only Y or N are acceptable: ";
+      cout << col_red << "Only Y or N are acceptable: " << col_end;
       res = cin.get();
       cin.ignore(1000, '\n');
     }
@@ -59,6 +65,21 @@ namespace sict {
     file.close();
     if (_submitterDir.length() == 0) _submitterDir = _home + SUB_DEF_DIR;
   }
+  /*bool Submitter::getSubmitterValues() {
+    bool ok = false;
+    Vals V('|');
+    std::string fname(_home + SUB_CFG_FILE);
+    ifstream file(fname.c_str());
+    while (file) {
+      file >> V;
+      if (V.size() > 1) {
+        ok = true;
+        _subVals.add(V[0], Vals(V[1], ','));
+      }
+    }
+    file.close();
+    return ok;
+  }*/
   bool Submitter::getAssignmentValues() {
     bool ok = false;
     Vals V('|');
@@ -69,7 +90,7 @@ namespace sict {
       file >> V;
       if (V.size() > 1) {
         ok = true;
-        _AsVals.add(V[0], Vals(V[1], ','));
+        _asVals.add(V[0], Vals(V[1], ','));
       }
     }
     file.close();
@@ -77,12 +98,12 @@ namespace sict {
   }
   bool Submitter::copyProfFiles() {
     bool ret = true;
-    if (_AsVals.exist("copy_files")) {
-      ret = _AsVals["copy_files"].size() > 0;
+    if (_asVals.exist("copy_files")) {
+      ret = _asVals["copy_files"].size() > 0;
       int i;
-      for (i = 0; ret && i < _AsVals["copy_files"].size(); i++) {
+      for (i = 0; ret && i < _asVals["copy_files"].size(); i++) {
         Command cmd("cp ");
-        cmd += (_submitterDir + "/" + _AsVals["copy_files"][i] + " .");
+        cmd += (_submitterDir + "/" + _asVals["copy_files"][i] + " .");
         // cout << cmd << endl; // to show or not to show!
         ret = (cmd.run() == 0);
       }
@@ -90,7 +111,7 @@ namespace sict {
     return ret;
   }
   bool Submitter::filesExist() {
-    Vals& files = _AsVals["assess_files"];
+    Vals& files = _asVals["assess_files"];
     bool ret = files.size() > 0;
     ifstream file;
     int i;
@@ -139,13 +160,14 @@ namespace sict {
       os << " ";
       i++;
     }
-    os << "^" << endl;
+    os << col_red << "^" << col_end << endl;
     i = 0;
+    os << col_grey;
     while (stdnt[i] && prof[i] && stdnt[i] == prof[i]) {
       os << "-";
       i++;
     }
-    os << "|" << endl;
+    os << col_red << "|" << col_end << endl;
     os << endl << "Unmatched character details:" << endl;
     os << "The character in column " << (i + 1)
       << " is supposed to be:" << endl << "  [" << charName(prof[i]) << "] ASCII code(" << int(prof[i]) << ")" << endl
@@ -158,11 +180,7 @@ namespace sict {
     }
     os << "] ASCII code(" << int(stdnt[i]) << ")" << endl << endl;
 
-  /* changed to the above 
-     os << "Professor's character ASCII code: hex(" << hex << int(prof[i])
-      << "), dec(" << dec << int(prof[i]) << ")" << endl;
-    os << "un-matched character ASCII code: hex(" << hex << int(stdnt[i])
-      << "), dec(" << dec << int(stdnt[i]) << ")" << endl;*/
+
 
   }
   bool Submitter::compare(const char* stdnt, const char* prof, int line) {
@@ -175,11 +193,11 @@ namespace sict {
     }
     return ok;
   }
-  bool Submitter::removeBS() {
+  bool Submitter::removeBS(const char* filename) {
     bool good = true;
-    fstream file(_AsVals["output_file"][0].c_str(), ios::in);
+    fstream file(filename, ios::in);
     if (!file) {
-      cout << "Error #17.1: could not open " << _AsVals["output_file"][0] << endl;
+      cout << "Error #17.1: could not open " << filename << endl;
       good = false;
     }
     else {
@@ -203,9 +221,9 @@ namespace sict {
       }
       buf[i] = 0;
       file.close();
-      file.open(_AsVals["output_file"][0].c_str(), ios::out);
+      file.open(filename, ios::out);
       if (!file) {
-        cout << "Error #17.2: could not open " << _AsVals["output_file"][0] << " for output" << endl;
+        cout << "Error #17.2: could not open " << filename << " for output" << endl;
         good = false;
       }
       else {
@@ -264,13 +282,13 @@ namespace sict {
     return chName[int(ch)];
   }
   bool Submitter::skipLine(int lineNo) {
-    int skipNum = _AsVals["comp_range"].size() - 2;
+    int skipNum = _asVals["comp_range"].size() - 2;
     bool skip = false;
     int curLine;
     for (int i = 0; !skip && i < skipNum; i++) {
-      if (sscanf(_AsVals["comp_range"][i + 2].c_str(), "%d", &curLine) == 1 && curLine == lineNo) {
+      if (sscanf(_asVals["comp_range"][i + 2].c_str(), "%d", &curLine) == 1 && curLine == lineNo) {
         skip = true;
-#ifdef SICT_DEBUG_SUBMITTER
+#ifdef SICT_DEBUG
         cout << "Skipping line " << curLine << endl;
 #endif
       }
@@ -281,14 +299,14 @@ namespace sict {
     char sstr[4096], pstr[4096];
     bool good = true;
     int line = 0;
-    ifstream stfile(_AsVals["output_file"][0].c_str());
-    ifstream prfile(_AsVals["correct_output"][0].c_str());
+    ifstream stfile(_asVals["output_file"][0].c_str());
+    ifstream prfile(_asVals["correct_output"][0].c_str());
     if (!stfile) {
-      cout << "Error #17: could not open " << _AsVals["output_file"][0] << endl;
+      cout << "Error #17: could not open " << _asVals["output_file"][0] << endl;
       good = false;
     }
     if (!prfile) {
-      cout << "Error #17: could not open " << _AsVals["correct_output"][0] << endl;
+      cout << "Error #17: could not open " << _asVals["correct_output"][0] << endl;
       good = false;
     }
     while (line < to && good && stfile && prfile) {
@@ -314,27 +332,27 @@ namespace sict {
     return 0;
 #endif // SICT_DEBUG
 
-    if (_AsVals.exist("compile_command")) {
-      Command compile(_AsVals["compile_command"][1]);
-      if (_AsVals.exist("compile_files")) {
-        for (i = 0; i < _AsVals["compile_files"].size(); i++) {
-          compile += (" " + _AsVals["compile_files"][i]);
+    if (_asVals.exist("compile_command")) {
+      Command compile(_asVals["compile_command"][1]);
+      if (_asVals.exist("compile_files")) {
+        for (i = 0; i < _asVals["compile_files"].size(); i++) {
+          compile += (" " + _asVals["compile_files"][i]);
         }
-        if (_AsVals.exist("err_file")) {
-          compile += (" 2> " + _AsVals["err_file"][0]);
+        if (_asVals.exist("err_file")) {
+          compile += (" 2> " + _asVals["err_file"][0]);
           cout << "Compiling:" << endl;
           cout << compile << endl << endl
             << "Compile result:" << endl;
           if ((errcode = compile.run()) != 0) {
-            cout << "You have compilation errors. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
+            cout << "You have compilation errors. Please open \"" << _asVals["err_file"][0] << "\" to veiw" << endl
               << "and correct them." << endl << "Submission aborted! (code: " << errcode << ")" << endl;
             ok2submit = false;
             bad = 9;
           }
 
-          if (!bad && _AsVals["allow_warning"][0] != "yes") {
-            if (Command("grep warning " + _AsVals["err_file"][0] + ">/dev/null").run() == 0) {
-              cout << "You have compilation warnings. Please open \"" << _AsVals["err_file"][0] << "\" to veiw" << endl
+          if (!bad && _asVals["allow_warning"][0] != "yes") {
+            if (Command("grep warning " + _asVals["err_file"][0] + ">/dev/null").run() == 0) {
+              cout << "You have compilation warnings. Please open \"" << _asVals["err_file"][0] << "\" to veiw" << endl
                 << "and correct them." << endl << "Submission aborted!" << endl;
               bad = 10;
               ok2submit = false;
@@ -367,28 +385,28 @@ namespace sict {
   }
   int Submitter::execute() {
     int bad = 0;
-    if (!_AsVals.exist("exe_name")) {
+    if (!_asVals.exist("exe_name")) {
       cout << "Error #11: executable filename not specified!" << endl
         << "Please report this to your professor." << endl;
       bad = 11;
     }
-    else if (!_AsVals.exist("output_file")) {
+    else if (!_asVals.exist("output_file")) {
       cout << "Error #12: output filename not specified!" << endl
         << "Please report this to your professor." << endl;
       bad = 12;
     }
     else {
-      if (_AsVals["output_type"][0] == "script") {
+      if (_asVals["output_type"][0] == "script") {
         cout << endl << "READ THE FOLLOWING CAREFULLY!" << endl;
-        cout << "I am about to execute the tester and capture the output in \"" << _AsVals["output_file"][0] << "\"" << endl;
+        cout << "I am about to execute the tester and capture the output in \"" << _asVals["output_file"][0] << "\"" << endl;
         cout << "Please enter the values carefuly and exactly as instructed." << endl
           << "Press <ENTER> to start...";
         cin.ignore(1000, '\n');
         clrscr();
-        Command("script " + _AsVals["output_file"][0] + " -c " + _AsVals["exe_name"][0]).run();
+        Command("script " + _asVals["output_file"][0] + " -c " + _asVals["exe_name"][0]).run();
       }
       else {
-        Command(_AsVals["exe_name"] + " >" + _AsVals["output_file"]).run();
+        Command(_asVals["exe_name"] + " >" + _asVals["output_file"]).run();
       }
     }
     return bad;
@@ -396,26 +414,27 @@ namespace sict {
   int Submitter::checkOutput() {
     int bad = 0;
     int from = 0, to = 0;
-    if (!removeBS()) bad = 17;
-    if (!bad && _AsVals.exist("comp_range")) {
-      if (sscanf(_AsVals["comp_range"][0].c_str(), "%d", &from) == 1
-        && sscanf(_AsVals["comp_range"][1].c_str(), "%d", &to) == 1) {
-        if (_AsVals.exist("correct_output")) {
-          if (Command("cp " + _submitterDir + "/" + _AsVals["correct_output"][0] + " .").run() == 0) {
+    if (!removeBS(_asVals["output_file"][0].c_str())) bad = 17;
+    if (!bad && _asVals.exist("comp_range")) {
+      if (sscanf(_asVals["comp_range"][0].c_str(), "%d", &from) == 1
+        && sscanf(_asVals["comp_range"][1].c_str(), "%d", &to) == 1) {
+        if (_asVals.exist("correct_output")) {
+          if (Command("cp " + _submitterDir + "/" + _asVals["correct_output"][0] + " .").run() == 0) {
+            if (!removeBS(_asVals["correct_output"][0].c_str())) bad = 17;
             if (!compareOutputs(from, to)) {
               bad = 18;
               cout << "Outputs don't match. Submission aborted!" << endl << endl;
               cout << "To see exactly what is wrong, open the following two files in this" << endl
                 << "directory and compare them: " << endl
-                << "Your output file:    " << _AsVals["output_file"][0].c_str() << endl
-                << "Correct output file: " << _AsVals["correct_output"][0].c_str() << endl << endl;
+                << "Your output file:    " << _asVals["output_file"][0].c_str() << endl
+                << "Correct output file: " << _asVals["correct_output"][0].c_str() << endl << endl;
             }
             else {
               cout << "Success!... Outputs match." << endl;
             }
           }
           else {
-            cout << "Error #15: could not access " << _AsVals["correct_output"][0] << "." << endl
+            cout << "Error #15: could not access " << _asVals["correct_output"][0] << "." << endl
               << "please report this to your professor!" << endl;
             bad = 15;
           }
@@ -439,7 +458,7 @@ namespace sict {
     return bad;
   }
   const char* Submitter::name() {
-    return _AsVals["assessment_name"][0].c_str();
+    return _asVals["assessment_name"][0].c_str();
   }
 
   /*run returns:
@@ -471,20 +490,23 @@ namespace sict {
     int bad = 0;
     int i = 0;
     clrscr();
-#ifdef SICT_DEBUG_SUBMITTER
-    cout << "DEBUGGING SUBMITTER.........................................." << endl;
+#ifdef SICT_DEBUG
+    cout << col_yellow << "DEBUGGING SUBMITTER" << endl;
+    cout << "Comment debug defines in debug.h to turn off debugging......." << col_end << endl;
 #endif
-    cout << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
+    cout << col_grey << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
     cout << "by Fardad S. (Last update: " << SUBMITTER_DATE << ")" << endl
-      << "===============================================================" << endl << endl;
+      << "===============================================================" << col_end << endl << endl;
     // if the command has valid format
     if (_argc != 2) {
       cout << "Error #1: submission command format: " << endl;
       cout << "~prof_name.prof_lastname/submit DeliverableName<ENTER>" << endl;
       bad = 1;
     }
+
     if (!bad) {
       // from SUB_CFG_FILE file set the sibmitter directory
+     /* bad = int(!getSubmitterValues()) * 2; see header file*/
       setSubmitterDir();
       // get the assignment specs and put it in AsVals
       bad = int(!getAssignmentValues()) * 2;
@@ -494,9 +516,9 @@ namespace sict {
         << "If you continue to get this error message, include the submission" << endl
         << "command in an email and report it to your professor!" << endl;
     }
-    if (_AsVals.exist("rejection_date")) {
+    if (_asVals.exist("rejection_date")) {
       std::stringstream ssReject;
-      ssReject << _AsVals["rejection_date"][0];
+      ssReject << _asVals["rejection_date"][0];
       rejectionDate.read(ssReject);
       if (rejectionDate.bad()) {
         cout << "Bad rejection date format in config file." << endl
@@ -504,17 +526,33 @@ namespace sict {
         bad = 22;
       }
       else if (now > rejectionDate) {
-        cout << "*** Submission Rejected! ***" << endl
+        cout << col_red << "*** Submission Rejected! ***" << col_end << endl
           << "The deadline for this submission has passed(Due: " << rejectionDate << ")." << endl
           << "If you believe this to be an error, please discuss with your professor." << endl;
         ok2submit = false;
       }
     }
+    if (!bad) {
+      if (_asVals.exist("announcement")) {
+        char ch;
+        ifstream anFile(_submitterDir + "/" + _asVals["announcement"][0]);
+        if (anFile) cout << col_red << "Attention: " << endl;
+        cout << col_cyan;
+        while (anFile) {
+          anFile.get(ch);
+          if (anFile) cout.put(ch);
+        }
+        cout << col_red << "Press <ENTER> to continue..." << col_end;
+        cin.ignore(1000, '\n');
+        clrscr();
+      }
+    }
+
     if (ok2submit) {
       if (!bad) {
         // if Assignment name is set in the assignment spcs files
-        if (_AsVals.exist("assessment_name")) {
-          if (_AsVals.exist("submit_files")) {
+        if (_asVals.exist("assessment_name")) {
+          if (_asVals.exist("submit_files")) {
             cout << "Submitting:" << endl << name() << endl << endl;
           }
           else {
@@ -542,8 +580,8 @@ namespace sict {
       }
 
 
-      if (!bad && _AsVals.exist("due_dates")) {
-        int li = _AsVals["due_dates"].size();
+      if (!bad && _asVals.exist("due_dates")) {
+        int li = _asVals["due_dates"].size();
         if (li % 2 == 0) {
           std::stringstream ssDue;
           cout << endl << "Checking due date:" << endl;
@@ -551,8 +589,8 @@ namespace sict {
           while (!late && !bad && li > 0) {
             ssDue.clear();
             ssDue.str(std::string());
-            lateTitle = _AsVals["due_dates"][--li];
-            ssDue << _AsVals["due_dates"][--li];
+            lateTitle = _asVals["due_dates"][--li];
+            ssDue << _asVals["due_dates"][--li];
             dueDate.read(ssDue);
             if (dueDate.bad()) {
               cout << "Error #20: bad due date format in config file." << endl
@@ -572,44 +610,44 @@ namespace sict {
         if (!bad) {
           if (late) {
             if (lateTitle.length() == 0) lateTitle.assign("LATE");
-            cout << lateTitle << "!" << endl;
+            cout << col_yellow <<  lateTitle << "!" << col_end << endl << endl;
           }
           else {
-            cout << "ON TIME." << endl;
+            cout << col_green <<  "ON TIME." << col_end << endl << endl;
           }
         }
       }
 
 
 
-      if (!bad && _AsVals["compile"][0] == "yes") {
+      if (!bad && _asVals["compile"][0] == "yes") {
         if ((bad = compile()) == 0) {
           cout << "Success! no errors or warnings..." << endl;
         }
       }
-      if (!bad && _AsVals["execute"][0] == "yes") {
+      if (!bad && _asVals["execute"][0] == "yes") {
         cout << endl << "Testing execution:";
         bad = execute();
       }
-      if (!bad && _AsVals["check_output"][0] == "yes") {
+      if (!bad && _asVals["check_output"][0] == "yes") {
         cout << endl << "Checking output:" << endl;
         bad = checkOutput();
       }
 
       if (!bad && ok2submit) {
-        if (_AsVals.exist("submit_files")) {
+        if (_asVals.exist("submit_files")) {
           cout << endl << "Submission: " << endl;
-          if (!bad && _AsVals.exist("due_dates")) {
+          if (!bad && _asVals.exist("due_dates")) {
             if (late) {
-              cout << "*** This is a " << lateTitle << " submission; the due date was: " << dueDate << " ***" << endl;
+              cout << "*** This submission is " << lateTitle << " ; the due date was: " << dueDate << " ***" << endl;
             }
             else {
-              cout << "On time submission, due date: " << dueDate << endl;
+              cout << "On time submission, due date: " << dueDate << endl << endl;
             }
           }
           cout << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
           if (yes()) {
-            if (submit(_AsVals["prof_email"][0])) {
+            if (submit(_asVals["prof_email"][0])) {
               cout << "Thank you!, Your work is now submitted." << endl;
             }
             else {
@@ -618,10 +656,10 @@ namespace sict {
                 << "Please report this to your professor" << endl;
             }
             if (!bad) {
-              if (!_AsVals.exist("CC_student") || _AsVals["CC_student"][0] == "yes") {
+              if (!_asVals.exist("CC_student") || _asVals["CC_student"][0] == "yes") {
                 cout << endl << "Would you like to receive a confirmation email for this submission? (Y)es/(N)o: ";
                 if (yes()) {
-                  if (submit(_AsVals["prof_email"][0], true)) {
+                  if (submit(_asVals["prof_email"][0], true)) {
                     cout << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << endl;
                   }
                   else {
@@ -632,11 +670,11 @@ namespace sict {
                 }
               }
             }
-            if (!bad && _AsVals["prof_email"].size() > 1) {
+            if (!bad && _asVals["prof_email"].size() > 1) {
               cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
               if (yes()) {
-                for (i = 1; i < signed(_AsVals["prof_email"].size()); i++) {
-                  if (submit(_AsVals["prof_email"][i])) {
+                for (i = 1; i < signed(_asVals["prof_email"].size()); i++) {
+                  if (submit(_asVals["prof_email"][i])) {
                     cout << "CC no " << i << " is sent to the TA for feedback." << endl;
                   }
                   else {
@@ -672,7 +710,7 @@ namespace sict {
     email += " by `whoami`. Executed from ";
     email += _home;
     email += "\" | mail -s \"";
-    email += _AsVals["subject_code"][0] + " - ";
+    email += _asVals["subject_code"][0] + " - ";
     email += name();
     if (late) {
       email += " ";
@@ -680,8 +718,8 @@ namespace sict {
     }
     email += " submission by `whoami`\" ";
     email += " -Sreplyto=`whoami`@myseneca.ca ";
-    for (int i = 0; i < _AsVals["submit_files"].size(); i++) {
-      email += " -a " + _AsVals["submit_files"][i];
+    for (int i = 0; i < _asVals["submit_files"].size(); i++) {
+      email += " -a " + _asVals["submit_files"][i];
     }
     if (Confirmation) { // send email to student from prof and ingore the toEmail argument
       email += " `whoami`@myseneca.ca";

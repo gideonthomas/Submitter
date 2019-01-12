@@ -2,6 +2,7 @@
 #define SICT_DATE_H__
 #include <iostream>
 #include <sstream>
+#include "debug.h"
 namespace sict{
   const int NO_ERROR = 0;
   const int CIN_FAILED = 1;
