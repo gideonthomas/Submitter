@@ -11,11 +11,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.98.5 fixed extra long lines"
+#define SUBMITTER_VERSION "0.99 colors, duedates, announcements"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "20/Dec/2018"
+#define SUBMITTER_DATE "21/Jan/2019"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
