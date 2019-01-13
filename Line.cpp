@@ -1,5 +1,5 @@
 #include <cstring>
-#include "line.h"
+#include "Line.h"
 #include "colors.h"
 #include "debug.h"
 
@@ -92,7 +92,7 @@ namespace sict {
       ch = 33;
     }
     else {
-      strcpy(_chName, chName[int(ch)]);
+      copy(_chName, chName[int(ch)]);
     }
     return _chName;
   }
