@@ -17,12 +17,11 @@
 using namespace std;
 namespace sict {
   Submitter::Submitter(int argc, char** argv) :
-    _argc(argc),
-    _argv(argv),
-    _skipSpaces(false),
-    _skipNewlines(false),
     _home(argv[0]),
     _cls("clear"){
+    _argc = argc;
+    _argv = argv;
+    _skipNewlines = _skipSpaces = false;
     if (_argc >= 2) _configFileName = argv[1];
     size_t last = _home.find_last_of('/');
     if (last != string::npos) {
@@ -134,7 +133,6 @@ namespace sict {
   }
 
   void Submitter::diff(ostream& os, const char* stdnt, const char* prof, int line, int stIdx, int profIdx) {
-    int i = 0;
     os << "In line number " << line << " of your output:" << endl;
     os << "The output should be:" << endl << Line(prof,profIdx) << endl;
     os << "But your output is: " << endl << Line(stdnt,stIdx) << endl;
@@ -142,16 +140,7 @@ namespace sict {
     os << "The character in column " << (stIdx + 1)
       << " is supposed to be:" << endl << "  [" << Line(prof)[profIdx] << "] ASCII code(" << int(prof[profIdx]) << ")" << endl
       << "but you printed" << endl << "  [" << Line(stdnt)[stIdx] << "] ASCII code(" << int(stdnt[stIdx]) << ")" << endl << endl;
-    //if (stdnt[stIdx] >= 33) {
-    //  os << stdnt[stIdx];
-    //}
-    //else {
-    //  os << charName(stdnt[stIdx]);
-    //}
-    //os << "] ASCII code(" << int(stdnt[stIdx]) << ")" << endl << endl;
-
-
-  }
+   }
   bool Submitter::lineCompare(const char *std, const char* prof, int& stIdx, int& profIdx) {
     int pi = -1;
     int si = -1;
