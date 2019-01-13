@@ -38,11 +38,13 @@ namespace sict {
     return _buf;
   }
   void Line::copy(char* des, const char* src) {
-    while (bool(*des++ = *src++));
+    while (*src) *des++ = *src++;
+    *des = 0;
   }
   void Line::cat(char* des, const char* src) {
     while (*des) des++;
-    while (bool(*des++ = *src++));
+    while (*src) *des++ = *src++;
+    *des = 0;
   }
   void Line::cat(char* des, char src) {
     while (*des) des++;
