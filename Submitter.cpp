@@ -11,14 +11,18 @@
 #include "Command.h"
 #include "Submitter.h"
 #include "Date.h"
+#include "Line.h"
 #include "colors.h"
 
 using namespace std;
 namespace sict {
-  Submitter::Submitter(int argc, char** argv) :_cls("clear") {
-    _argc = argc;
-    _argv = argv;
-    _home = argv[0];
+  Submitter::Submitter(int argc, char** argv) :
+    _argc(argc),
+    _argv(argv),
+    _skipSpaces(false),
+    _skipNewlines(false),
+    _home(argv[0]),
+    _cls("clear"){
     if (_argc >= 2) _configFileName = argv[1];
     size_t last = _home.find_last_of('/');
     if (last != string::npos) {
@@ -27,8 +31,8 @@ namespace sict {
 #ifdef SICT_DEBUG
     _home = "";
 #endif
-    ok2submit = true;
-    late = false;
+    _ok2submit = true;
+    _late = false;
   }
   void Submitter::clrscr()const {
 #ifdef SICT_DEBUG
@@ -118,7 +122,7 @@ namespace sict {
     for (i = 0; ret && i < files.size(); i++) {
       file.open(files[i]);
       if (!file) {
-        ok2submit = ret = false;
+        _ok2submit = ret = false;
         cout << files[i] << ", is missing!" << endl;
       }
       else {
@@ -128,67 +132,63 @@ namespace sict {
     }
     return ret;
   }
-  class Line {
-    const char* _line;
-  public:
-    Line(const char* line) {
-      _line = line;
-    }
-    ostream& display(ostream& os)const {
-      const char* line = _line;
-      while (*line) {
-        if (*line == '\b') {
-          os << "\\b";
-        }
-        else {
-          os << *line;
-        }
-        line++;
-      }
-      return os;
-    }
-  };
-  ostream& operator<<(ostream& os, const Line& L) {
-    return L.display(os);
-  }
-  void Submitter::diff(ostream& os, const char* stdnt, const char* prof, int line) {
+
+  void Submitter::diff(ostream& os, const char* stdnt, const char* prof, int line, int stIdx, int profIdx) {
     int i = 0;
     os << "In line number " << line << " of your output:" << endl;
-    os << "The output should be:" << endl << Line(prof) << endl;
-    os << "But your output is: " << endl << Line(stdnt) << endl;
-    while (stdnt[i] && prof[i] && stdnt[i] == prof[i]) {
-      os << " ";
-      i++;
-    }
-    os << col_red << "^" << col_end << endl;
-    i = 0;
-    os << col_grey;
-    while (stdnt[i] && prof[i] && stdnt[i] == prof[i]) {
-      os << "-";
-      i++;
-    }
-    os << col_red << "|" << col_end << endl;
+    os << "The output should be:" << endl << Line(prof,profIdx) << endl;
+    os << "But your output is: " << endl << Line(stdnt,stIdx) << endl;
     os << endl << "Unmatched character details:" << endl;
-    os << "The character in column " << (i + 1)
-      << " is supposed to be:" << endl << "  [" << charName(prof[i]) << "] ASCII code(" << int(prof[i]) << ")" << endl
-      << "but you printed" << endl << "  [";
-    if (stdnt[i] >= 33) {
-      os << stdnt[i];
-    }
-    else {
-      os << charName(stdnt[i]);
-    }
-    os << "] ASCII code(" << int(stdnt[i]) << ")" << endl << endl;
-
+    os << "The character in column " << (stIdx + 1)
+      << " is supposed to be:" << endl << "  [" << Line(prof)[profIdx] << "] ASCII code(" << int(prof[profIdx]) << ")" << endl
+      << "but you printed" << endl << "  [" << Line(stdnt)[stIdx] << "] ASCII code(" << int(stdnt[stIdx]) << ")" << endl << endl;
+    //if (stdnt[stIdx] >= 33) {
+    //  os << stdnt[stIdx];
+    //}
+    //else {
+    //  os << charName(stdnt[stIdx]);
+    //}
+    //os << "] ASCII code(" << int(stdnt[stIdx]) << ")" << endl << endl;
 
 
   }
+  bool Submitter::lineCompare(const char *std, const char* prof, int& stIdx, int& profIdx) {
+    int pi = -1;
+    int si = -1;
+    int p, s;
+    bool same = true;
+    do {
+      pi++;
+      si++;
+      if (_skipSpaces) {
+        p = s = 0;
+        while (prof[pi] && isSpace(prof[pi])) {
+          pi++;
+          p = 1;
+        }
+        while (std[si] && isSpace(std[si])) {
+          si++;
+          s = 1;
+        }
+        pi -= (prof[pi] && p); // leave one space but not at the end of the line
+        si -= (std[si] && s);  // same as above
+      }
+      same = prof[pi] == std[si];
+    } while (same && prof[pi] && std[si]);
+    if (!same) {
+      stIdx = si;
+      profIdx = pi;
+    }
+    return same;
+  }
   bool Submitter::compare(const char* stdnt, const char* prof, int line) {
-    bool ok = strcmp(stdnt, prof) == 0;
+    int pi = -1;  // prof unmatched index
+    int si = -1;  // student unmatched index
+    bool ok = lineCompare(stdnt,prof, si, pi);
     if (!ok) {
-      diff(cout, stdnt, prof, line);
+      diff(cout, stdnt, prof, line,si, pi);
       ofstream diffFile("diff.txt");
-      diff(diffFile, stdnt, prof, line);
+      diff(diffFile, stdnt, prof, line,si, pi);
       diffFile.close();
     }
     return ok;
@@ -237,50 +237,7 @@ namespace sict {
     }
     return good;
   }
-  const char* Submitter::charName(char ch) {
-    static char chName[34][39] = {
-      "NULL",
-      "Start Of Heading",
-      "Start Of Text",
-      "End Of Text",
-      "End Of Transmission",
-      "Enquiry",
-      "Acknoledge",
-      "Bell (\\a)",
-      "Backspace (\\b)",
-      "Tab (\\t)",
-      "New Line (\\n)",
-      "Vertical Tab",
-      "Form Feed (\\f)",
-      "Newline (\\n) or Carriage Retrun (\\r)",
-      "Shift out",
-      "Shift in",
-      "Data Link Escape",
-      "Device Control 1",
-      "Device Control 2",
-      "Device Control 3",
-      "Device Control 4",
-      "Negative Acknoledge",
-      "Synchronous Idle",
-      "End of Tran. Block",
-      "Cancel",
-      "End Of Medium",
-      "Substitude",
-      "Escape",
-      "File Separator",
-      "Groupu Separator",
-      "Record Separator",
-      "Unit Separator",
-      "Space",
-      "Non printable char"
-    };
-    if (ch >= 33) {
-      chName[33][0] = ch;
-      chName[33][1] = '\0';
-      ch = 33;
-    }
-    return chName[int(ch)];
-  }
+
   bool Submitter::skipLine(int lineNo) {
     int skipNum = _asVals["comp_range"].size() - 2;
     bool skip = false;
@@ -295,10 +252,22 @@ namespace sict {
     }
     return skip;
   }
+  bool Submitter::isEmptyLine(const char* line) {
+    int i= 0;
+    bool isEmpty = true;
+    while (isEmpty &&  line[i]) {
+      if (!isSpace(line[i])) {
+        isEmpty = false;
+      }
+      i++;
+    }
+    return isEmpty;
+  }
   bool Submitter::compareOutputs(int from, int to) {
     char sstr[4096], pstr[4096];
     bool good = true;
-    int line = 0;
+    int pline = 0;
+    int sline = 0;
     ifstream stfile(_asVals["output_file"][0].c_str());
     ifstream prfile(_asVals["correct_output"][0].c_str());
     if (!stfile) {
@@ -309,18 +278,33 @@ namespace sict {
       cout << "Error #17: could not open " << _asVals["correct_output"][0] << endl;
       good = false;
     }
-    while (line < to && good && stfile && prfile) {
-      line++;
+    while (pline < to && good && stfile && prfile) {
       sstr[0] = pstr[0] = 0;
-      stfile.getline(sstr, 4095, '\n');
-      prfile.getline(pstr, 4095, '\n');
-      if (!skipLine(line) && line >= from) {
-        ok2submit = good = compare(sstr, pstr, line);
+      do {
+        sline++;
+        stfile.getline(sstr, 4095, '\n');
+      } while (_skipNewlines && isEmptyLine(sstr) && stfile);
+      do {
+        pline++;
+        prfile.getline(pstr, 4095, '\n');
+      } while (_skipNewlines && isEmptyLine(pstr) && prfile);
+      if (!skipLine(pline) && pline >= from && pline <= to) {
+        _ok2submit = good = compare(sstr, pstr, pline);
       }
     }
-    if (line < from) {
-      ok2submit = good = false;
+    if (pline < from) {
+      _ok2submit = good = false;
       cout << "Your output file is too short or empty!" << endl;
+    }
+    do {
+      sline++;
+      stfile.getline(sstr, 4095, '\n');
+    } while (_skipNewlines && isEmptyLine(sstr) && stfile);
+    if (!isEmptyLine(sstr)) {
+      _ok2submit = good = false;
+      cout << endl << col_red << "Your output file is too long!" << col_end << endl ;
+      cout << "the following data found in your ouput where end of file was expected." << endl;
+      cout << Line(sstr, 0) << endl;
     }
     return good;
   }
@@ -346,7 +330,7 @@ namespace sict {
           if ((errcode = compile.run()) != 0) {
             cout << "You have compilation errors. Please open \"" << _asVals["err_file"][0] << "\" to veiw" << endl
               << "and correct them." << endl << "Submission aborted! (code: " << errcode << ")" << endl;
-            ok2submit = false;
+            _ok2submit = false;
             bad = 9;
           }
 
@@ -355,7 +339,7 @@ namespace sict {
               cout << "You have compilation warnings. Please open \"" << _asVals["err_file"][0] << "\" to veiw" << endl
                 << "and correct them." << endl << "Submission aborted!" << endl;
               bad = 10;
-              ok2submit = false;
+              _ok2submit = false;
             }
           }
         }
@@ -378,7 +362,7 @@ namespace sict {
     }
 #ifdef SICT_DEBUG
     bad = 0;
-    ok2submit = true;
+    _ok2submit = true;
 #endif // SICT_DEBUG
 
     return bad;
@@ -460,7 +444,35 @@ namespace sict {
   const char* Submitter::name() {
     return _asVals["assessment_name"][0].c_str();
   }
-
+  void Submitter::printCommandSyntaxHelp()const {
+    cout << "Submission command format: " << endl;
+    cout << "~prof_name.prof_lastname/submit DeliverableName [-submission option]<ENTER>" << endl;
+    cout << "[-submission option] acceptable values: " << endl;
+    cout << "  \"-skip_spaces\":" << endl;
+    cout << "       Do the submission regardless of inccorrect vertical spacing." << endl;
+    cout << "       This option may attract penalty." << endl;
+    cout << "  \"-skip_blank_lines\":" << endl;
+    cout << "       Do the submission regardless of incorrect horizontal spacing." << endl;
+    cout << "       This option may attract penalty." << endl;
+  }
+  bool Submitter::checkAndSetOption(string option) {
+    bool ok = true;
+    if (option != "-skip_spaces" && option != "-skip_blank_lines") {
+      cout << "Unrecognized option: " << option << endl;
+      printCommandSyntaxHelp();
+      ok = false;
+    }
+    else if (option == "-skip_spaces") {
+      _skipSpaces = true;
+    }
+    else if (option == "-skip_blank_lines") {
+      _skipNewlines = true;
+    }
+    else {
+      _skipNewlines = _skipSpaces = false;
+    }
+    return ok;
+  }
   /*run returns:
   0 OK
   1 incorrect command line argument
@@ -483,9 +495,10 @@ namespace sict {
   18 output comparison failed
   19 the linux mail command failed at the end
   20 bad due date format in config file
-  21 bad due date and late title sequence in config file
+  21 bad due date and _late title sequence in config file
   23 bad rejection date format in config file
   */
+
   int Submitter::run() {
     int bad = 0;
     int i = 0;
@@ -498,12 +511,15 @@ namespace sict {
     cout << "by Fardad S. (Last update: " << SUBMITTER_DATE << ")" << endl
       << "===============================================================" << col_end << endl << endl;
     // if the command has valid format
-    if (_argc != 2) {
-      cout << "Error #1: submission command format: " << endl;
-      cout << "~prof_name.prof_lastname/submit DeliverableName<ENTER>" << endl;
+    if (_argc < 2 || _argc > 4) {
+      printCommandSyntaxHelp();
       bad = 1;
     }
-
+    else {
+      for (i = 2;!bad && i < _argc; i++) {
+        bad = !checkAndSetOption(_argv[i]);
+      }
+    }
     if (!bad) {
       // from SUB_CFG_FILE file set the sibmitter directory
      /* bad = int(!getSubmitterValues()) * 2; see header file*/
@@ -516,20 +532,29 @@ namespace sict {
         << "If you continue to get this error message, include the submission" << endl
         << "command in an email and report it to your professor!" << endl;
     }
+    if (!bad && !(_asVals.exist("skip_spaces") && _asVals["skip_spaces"][0] == "yes") && _skipSpaces) {
+      cout << "Your professor does not allow the -skip_spaces option for this submission!" << endl;
+      bad = 1;
+    }
+    if (!bad && !(_asVals.exist("skip_blank_lines") && _asVals["skip_blank_lines"][0] == "yes") && _skipSpaces) {
+      cout << "Your professor does not allow the -skip_blank_lines option for this submission!" << endl;
+      bad = 1;
+    }
+
     if (_asVals.exist("rejection_date")) {
       std::stringstream ssReject;
       ssReject << _asVals["rejection_date"][0];
-      rejectionDate.read(ssReject);
-      if (rejectionDate.bad()) {
+      _rejectionDate.read(ssReject);
+      if (_rejectionDate.bad()) {
         cout << "Bad rejection date format in config file." << endl
           << "Please report this to your professor." << endl;
         bad = 22;
       }
-      else if (now > rejectionDate) {
+      else if (_now > _rejectionDate) {
         cout << col_red << "*** Submission Rejected! ***" << col_end << endl
-          << "The deadline for this submission has passed(Due: " << rejectionDate << ")." << endl
+          << "The deadline for this submission has passed(Due: " << _rejectionDate << ")." << endl
           << "If you believe this to be an error, please discuss with your professor." << endl;
-        ok2submit = false;
+        _ok2submit = false;
       }
     }
     if (!bad) {
@@ -548,7 +573,7 @@ namespace sict {
       }
     }
 
-    if (ok2submit) {
+    if (_ok2submit) {
       if (!bad) {
         // if Assignment name is set in the assignment spcs files
         if (_asVals.exist("assessment_name")) {
@@ -572,7 +597,7 @@ namespace sict {
         // fileExist function already prints the name of missing files
         bad = int(!filesExist()) * 4;
         bad && cout << "Error #4: submission files missing." << endl;
-        ok2submit = !bad;
+        _ok2submit = !bad;
       }
       if (!bad) {
         bad = int(!copyProfFiles()) * 5;
@@ -585,32 +610,32 @@ namespace sict {
         if (li % 2 == 0) {
           std::stringstream ssDue;
           cout << endl << "Checking due date:" << endl;
-          late = false;
-          while (!late && !bad && li > 0) {
+          _late = false;
+          while (!_late && !bad && li > 0) {
             ssDue.clear();
             ssDue.str(std::string());
-            lateTitle = _asVals["due_dates"][--li];
+            _lateTitle = _asVals["due_dates"][--li];
             ssDue << _asVals["due_dates"][--li];
-            dueDate.read(ssDue);
-            if (dueDate.bad()) {
+            _dueDate.read(ssDue);
+            if (_dueDate.bad()) {
               cout << "Error #20: bad due date format in config file." << endl
                 << "Please report this to your professor!" << endl;
               bad = 20;
             }
-            if (now > dueDate) {
-              late = true;
+            if (_now > _dueDate) {
+              _late = true;
             }
           }
         }
         else {
-          cout << "Error #21: bad due date and late title sequence in config file." << endl
+          cout << "Error #21: bad due date and _late title sequence in config file." << endl
             << "Please report this to your professor!" << endl;
           bad = 20;
         }
         if (!bad) {
-          if (late) {
-            if (lateTitle.length() == 0) lateTitle.assign("LATE");
-            cout << col_yellow <<  lateTitle << "!" << col_end << endl << endl;
+          if (_late) {
+            if (_lateTitle.length() == 0) _lateTitle.assign("LATE");
+            cout << col_yellow <<  _lateTitle << "!" << col_end << endl << endl;
           }
           else {
             cout << col_green <<  "ON TIME." << col_end << endl << endl;
@@ -634,15 +659,15 @@ namespace sict {
         bad = checkOutput();
       }
 
-      if (!bad && ok2submit) {
+      if (!bad && _ok2submit) {
         if (_asVals.exist("submit_files")) {
           cout << endl << "Submission: " << endl;
           if (!bad && _asVals.exist("due_dates")) {
-            if (late) {
-              cout << "*** This submission is " << lateTitle << " ; the due date was: " << dueDate << " ***" << endl;
+            if (_late) {
+              cout << "*** This submission is " << _lateTitle << "; the due date was: " << _dueDate << " ***" << endl;
             }
             else {
-              cout << "On time submission, due date: " << dueDate << endl << endl;
+              cout << "On time submission, due date: " << _dueDate << endl << endl;
             }
           }
           cout << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
@@ -657,16 +682,13 @@ namespace sict {
             }
             if (!bad) {
               if (!_asVals.exist("CC_student") || _asVals["CC_student"][0] == "yes") {
-                cout << endl << "Would you like to receive a confirmation email for this submission? (Y)es/(N)o: ";
-                if (yes()) {
-                  if (submit(_asVals["prof_email"][0], true)) {
-                    cout << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << endl;
-                  }
-                  else {
-                    bad = 19;
-                    cout << "Error #19: confirmation email failed." << endl
-                      << "Please report this to your professor" << endl;
-                  }
+                if (submit(_asVals["prof_email"][0], true)) {
+                  cout << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << endl;
+                }
+                else {
+                  bad = 19;
+                  cout << "Error #19: confirmation email failed." << endl
+                    << "Please report this to your professor" << endl;
                 }
               }
             }
@@ -701,9 +723,9 @@ namespace sict {
   bool Submitter::submit(string& toEmail, bool Confirmation) {
     Command email("echo \"");
     email += name();
-    if (late) {
+    if (_late) {
       email += " ";
-      email += lateTitle;
+      email += _lateTitle;
     }
     email += " submission";
     if (Confirmation) email += " confirmation";
@@ -712,9 +734,15 @@ namespace sict {
     email += "\" | mail -s \"";
     email += _asVals["subject_code"][0] + " - ";
     email += name();
-    if (late) {
+    if (_late) {
       email += " ";
-      email += lateTitle;
+      email += _lateTitle;
+    }
+    if (_skipSpaces || _skipNewlines) {
+      email += " with bad";
+      if (_skipSpaces) email += " spacing";
+      if (_skipSpaces && _skipNewlines) email += " and";
+      if (_skipNewlines) email += " newlines";
     }
     email += " submission by `whoami`\" ";
     email += " -Sreplyto=`whoami`@myseneca.ca ";
