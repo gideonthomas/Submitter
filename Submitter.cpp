@@ -255,6 +255,7 @@ namespace sict {
   bool Submitter::compareOutputs(int from, int to) {
     char sstr[4096], pstr[4096];
     bool good = true;
+    bool longFile = false;
     int pline = 0;
     int sline = 0;
     ifstream stfile(_asVals["output_file"][0].c_str());
@@ -292,10 +293,21 @@ namespace sict {
       } while (_skipNewlines && isEmptyLine(sstr) && stfile);
       if (!isEmptyLine(sstr)) {
         _ok2submit = good = false;
-        cout << endl << col_red << "Your output file is too long!" << col_end << endl;
-        cout << "the following data found in your ouput where end of file was expected." << endl;
-        cout << Line(sstr, 0) << endl;
+        longFile = true;
       }
+    }
+    else if(good){
+      stfile.getline(sstr, 4095, '\n');
+      if (stfile) {
+        _ok2submit = good = false;
+        longFile = true;
+      }
+    }
+    if (longFile) {
+      cout << endl << col_red << "Your output file is too long!" << col_end << endl;
+      cout << "the following data found in your ouput where end of file was expected." << endl;
+      cout << Line(sstr, 0) << endl;
+      cout << "[" << Line(sstr)[0] << "] ASCII code(" << int(sstr[0]) << ")" << endl << endl;
     }
     return good;
   }
@@ -569,11 +581,19 @@ namespace sict {
         // if Assignment name is set in the assignment spcs files
         if (_asVals.exist("assessment_name")) {
           if (_asVals.exist("submit_files")) {
-            cout << "Submitting:" << endl << name() << endl << endl;
+            cout << "Submitting";
           }
           else {
-            cout << "Testing:" << endl << name() << endl << endl;
+            cout << "Testing";
           }
+          if (_skipSpaces || _skipNewlines) {
+            cout << " (Skipping";
+            if (_skipSpaces) cout << " spaces";
+            if (_skipSpaces && _skipNewlines) cout << " and";
+            if (_skipNewlines) cout << " blank lines";
+            cout << "): ";
+          }
+          cout << endl << name() << endl << endl;
         }
         else { // otherwise exit with error
           cout << "Error #3: \"assessment_name\" is not specified!" << endl
