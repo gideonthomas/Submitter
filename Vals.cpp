@@ -67,8 +67,8 @@ namespace sict{
     return *val;
   }
   std::ifstream& operator>>(std::ifstream& ifstr, Vals& V){
-    char line[2048] = "";
-    ifstr.getline(line, 2048, '\n');
+    char line[4096] = "";
+    ifstr.getline(line, 4095, '\n');
     V.clear();
     // not failed and not a comment
     if (!ifstr.fail() && !(line[0] == '-' && line[1] == '-')){

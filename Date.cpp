@@ -16,13 +16,8 @@ namespace sict{
     m_day = lt.tm_mday;
     m_mon = lt.tm_mon + 1;
     m_year = lt.tm_year + 1900;
-    if (dateOnly()){
-      m_hour = m_min = 0;
-    }
-    else{
-      m_hour = lt.tm_hour;
-      m_min = lt.tm_min;
-    }
+    m_hour = lt.tm_hour;
+    m_min = lt.tm_min;
     errCode(NO_ERROR);
   }
   void Date::set(int year, int mon, int day, int hour, int min){
@@ -39,7 +34,7 @@ namespace sict{
   }
   bool Date::validate(){
     errCode(NO_ERROR);
-    if (m_year < curYear() || m_year > curYear()+ 1){
+    if (m_year < curYear()-1 || m_year > curYear()+ 1){
       errCode(YEAR_ERROR);
     }
     else if (m_mon < 1 || m_mon > 12){
@@ -63,19 +58,15 @@ namespace sict{
     return days[mon] + int((mon == 1)*((m_year % 4 == 0) && (m_year % 100 != 0)) || (m_year % 400 == 0));
   }
   Date::Date(){
-    dateOnly(false);
     set();
   }
   Date::Date(int year, int mon, int day){
-    dateOnly(true);
-    set(year, mon, day, 0, 0);
+    set(year, mon, day, 23, 59);
   }
   Date::Date(int year, int mon, int day, int hour, int min ){
-    dateOnly(false);
     set(year, mon, day, hour, min);
   }
-  Date::Date(std::stringstream& theDate, bool isDateOnly) {
-    dateOnly(isDateOnly);
+  Date::Date(std::stringstream& theDate) {
     read(theDate);
   }
   void Date::errCode(int readErrorCode){
@@ -106,21 +97,25 @@ namespace sict{
     return !operator<(D);
   }
   istream& Date::read(istream& is){
+    char ch = '!';
     m_readErrorCode = 0;
     is >> m_year;
     is.ignore();
     is >> m_mon;
     is.ignore();
     is >> m_day;
-    if (!dateOnly()){
-      is.ignore();
-      is >> m_hour;
-      is.ignore();
-      is >> m_min;
+    is.get(ch);
+    is >> m_hour;
+    if (is.fail()) {
+      is.clear();
+      if(ch!='!') is.putback(ch);
+      m_hour = 23;
+      m_min = 59;
     }
     else{
-      m_hour = m_min = 0;
-    }
+      is.ignore();
+      is >> m_min;
+    } 
     if (is.fail()){
       errCode(CIN_FAILED);
     }
@@ -129,17 +124,10 @@ namespace sict{
     }
     return is;
   }
-  bool Date::dateOnly()const{
-    return m_dateOnly;
-  }
-  void Date::dateOnly(bool value){
-    m_dateOnly = value;
-    if (value) m_hour = m_min = 0;
-  }
+
   ostream& Date::write(ostream& os)const{ 
     os << right << m_year << "/" << setw(2) << setfill('0') << m_mon << "/"
       << setw(2) << setfill('0') << m_day;
-    if (!dateOnly())
       os <<", " << setw(2) << setfill('0') << m_hour << ":" << setw(2) << setfill('0') << m_min;
     return os;
   }

@@ -1,0 +1,1 @@
+Proefessors can use backspace in capturing correct output

@@ -2,6 +2,7 @@
 #define SICT_DATE_H__
 #include <iostream>
 #include <sstream>
+#include "debug.h"
 namespace sict{
   const int NO_ERROR = 0;
   const int CIN_FAILED = 1;
@@ -13,7 +14,6 @@ namespace sict{
   const bool DATE_ONLY = true;
   class Date{
   private:
-    bool m_dateOnly;
     int m_year;
     int m_mon;
     int m_day;
@@ -29,7 +29,7 @@ namespace sict{
     Date();
     Date(int year, int mon, int day);
     Date(int year, int mon, int day, int hour, int min = 0);
-    Date(std::stringstream& theDate, bool isDateOnly = !DATE_ONLY);
+    Date(std::stringstream& theDate);
     void set();
     bool operator==(const Date& D)const;
     bool operator!=(const Date& D)const;
@@ -37,8 +37,6 @@ namespace sict{
     bool operator>(const Date& D)const;
     bool operator<=(const Date& D)const;
     bool operator>=(const Date& D)const;
-    bool dateOnly()const;
-    void dateOnly(bool value);
     std::istream& read(std::istream& is = std::cin);
     std::ostream& write(std::ostream& os = std::cout)const;
     int errCode()const;
