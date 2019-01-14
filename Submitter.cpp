@@ -159,8 +159,8 @@ namespace sict {
           si++;
           s = 1;
         }
-        pi -= (prof[pi] && p); // leave one space but not at the end of the line
-        si -= (std[si] && s);  // same as above
+//        pi -= (prof[pi] && p); // leave one space but not at the end of the line
+//        si -= (std[si] && s);  // same as above
       }
       same = prof[pi] == std[si];
     } while (same && prof[pi] && std[si]);
