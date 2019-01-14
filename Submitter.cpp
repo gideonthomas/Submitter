@@ -144,23 +144,17 @@ namespace sict {
   bool Submitter::lineCompare(const char *std, const char* prof, int& stIdx, int& profIdx) {
     int pi = -1;
     int si = -1;
-    int p, s;
     bool same = true;
     do {
       pi++;
       si++;
       if (_skipSpaces) {
-        p = s = 0;
         while (prof[pi] && isSpace(prof[pi])) {
           pi++;
-          p = 1;
         }
         while (std[si] && isSpace(std[si])) {
           si++;
-          s = 1;
         }
-//        pi -= (prof[pi] && p); // leave one space but not at the end of the line
-//        si -= (std[si] && s);  // same as above
       }
       same = prof[pi] == std[si];
     } while (same && prof[pi] && std[si]);
@@ -170,6 +164,35 @@ namespace sict {
     }
     return same;
   }
+  //bool Submitter::lineCompare(const char *std, const char* prof, int& stIdx, int& profIdx) { // this is the logic to shrink the spaces to 1 instead of 0
+  //  int pi = -1;
+  //  int si = -1;
+  //  int p, s;
+  //  bool same = true;
+  //  do {
+  //    pi++;
+  //    si++;
+  //    if (_skipSpaces) {
+  //      p = s = 0;
+  //      while (prof[pi] && isSpace(prof[pi])) {
+  //        pi++;
+  //        p = 1;
+  //      }
+  //      while (std[si] && isSpace(std[si])) {
+  //        si++;
+  //        s = 1;
+  //      }
+  //      pi -= (prof[pi] && p); // leave one space but not at the end of the line
+  //      si -= (std[si] && s);  // same as above
+  //    }
+  //    same = prof[pi] == std[si];
+  //  } while (same && prof[pi] && std[si]);
+  //  if (!same) {
+  //    stIdx = si;
+  //    profIdx = pi;
+  //  }
+  //  return same;
+  //}
   bool Submitter::compare(const char* stdnt, const char* prof, int line) {
     int pi = -1;  // prof unmatched index
     int si = -1;  // student unmatched index
