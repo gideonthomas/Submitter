@@ -285,15 +285,17 @@ namespace sict {
       _ok2submit = good = false;
       cout << "Your output file is too short or empty!" << endl;
     }
-    do {
-      sline++;
-      stfile.getline(sstr, 4095, '\n');
-    } while (_skipNewlines && isEmptyLine(sstr) && stfile);
-    if (!isEmptyLine(sstr)) {
-      _ok2submit = good = false;
-      cout << endl << col_red << "Your output file is too long!" << col_end << endl ;
-      cout << "the following data found in your ouput where end of file was expected." << endl;
-      cout << Line(sstr, 0) << endl;
+    if (_skipNewlines && good) {
+      do {
+        sline++;
+        stfile.getline(sstr, 4095, '\n');
+      } while (_skipNewlines && isEmptyLine(sstr) && stfile);
+      if (!isEmptyLine(sstr)) {
+        _ok2submit = good = false;
+        cout << endl << col_red << "Your output file is too long!" << col_end << endl;
+        cout << "the following data found in your ouput where end of file was expected." << endl;
+        cout << Line(sstr, 0) << endl;
+      }
     }
     return good;
   }
@@ -438,7 +440,7 @@ namespace sict {
     cout << "~prof_name.prof_lastname/submit DeliverableName [-submission option]<ENTER>" << endl;
     cout << "[-submission option] acceptable values: " << endl;
     cout << "  \"-skip_spaces\":" << endl;
-    cout << "       Do the submission regardless of inccorrect vertical spacing." << endl;
+    cout << "       Do the submission regardless of incorrect vertical spacing." << endl;
     cout << "       This option may attract penalty." << endl;
     cout << "  \"-skip_blank_lines\":" << endl;
     cout << "       Do the submission regardless of incorrect horizontal spacing." << endl;
@@ -525,7 +527,7 @@ namespace sict {
       cout << "Your professor does not allow the -skip_spaces option for this submission!" << endl;
       bad = 1;
     }
-    if (!bad && !(_asVals.exist("skip_blank_lines") && _asVals["skip_blank_lines"][0] == "yes") && _skipSpaces) {
+    if (!bad && !(_asVals.exist("skip_blank_lines") && _asVals["skip_blank_lines"][0] == "yes") && _skipNewlines) {
       cout << "Your professor does not allow the -skip_blank_lines option for this submission!" << endl;
       bad = 1;
     }
@@ -715,6 +717,12 @@ namespace sict {
     if (_late) {
       email += " ";
       email += _lateTitle;
+    }
+    if (_skipSpaces || _skipNewlines) {
+      email += " with bad";
+      if (_skipSpaces) email += " spacing";
+      if (_skipSpaces && _skipNewlines) email += " and";
+      if (_skipNewlines) email += " newlines";
     }
     email += " submission";
     if (Confirmation) email += " confirmation";

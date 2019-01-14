@@ -1,14 +1,14 @@
-In line number 22 of your output:
+In line number 13 of your output:
 The output should be:
-something here not to test
-^
+Day 4 - High: 9
+              ^
 But your output is: 
-
-^
+Day 4 - High:  9
+              ^
 
 Unmatched character details:
-The character in column 1 is supposed to be:
-  [s] ASCII code(115)
+The character in column 15 is supposed to be:
+  [9] ASCII code(57)
 but you printed
-  [NULL] ASCII code(0)
+  [Space] ASCII code(32)
 

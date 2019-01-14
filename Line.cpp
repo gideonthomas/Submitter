@@ -53,7 +53,7 @@ namespace sict {
   }
   const char* Line::charName(char ch) {
     char chName[34][39] = {
-      "NULL",
+      "Empty Line",
       "Start Of Heading",
       "Start Of Text",
       "End Of Text",
