@@ -255,7 +255,7 @@ namespace sict {
   bool Submitter::compareOutputs(int from, int to) {
     char sstr[4096], pstr[4096];
     bool good = true;
-    bool longFile = false;
+    //bool longFile = false;
     int pline = 0;
     int sline = 0;
     ifstream stfile(_asVals["output_file"][0].c_str());
