@@ -1,6 +1,5 @@
 #!/bin/ksh
 
-clear
 echo "This will give 711 permission to your home directory, are you sure?(Y/N)"
 read resp
 if [ $resp == Y ] || [ $resp == y ]; then
