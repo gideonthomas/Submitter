@@ -815,8 +815,9 @@ namespace sict {
       if (m_skipSpaces && m_skipNewlines) email += " and";
       if (m_skipNewlines) email += " newlines";
     }
+    email += " ";
     email += m_accommTitle;
-    email += " submission";
+    email += "submission";
     if (Confirmation) email += " confirmation";
     email += " by `whoami`. Executed from ";
     email += m_home;
