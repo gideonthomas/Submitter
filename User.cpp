@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include "Debug.h"
+#include "debug.h"
 #include "colors.h"
 #include "Command.h"
 #include "User.h"

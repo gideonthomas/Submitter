@@ -120,7 +120,7 @@ namespace sict {
     return ok;
   }
   bool Submitter::assignmentMatch(string assignmentName)const {
-    int i;
+    unsigned int i;
     bool match = true;
     for (i = 0;match && i < assignmentName.size(); i++) {
       if (assignmentName[i] != '?') {
@@ -592,7 +592,6 @@ namespace sict {
     }
     
     if (m_asVals.exist("allowed_ips")) {
-      bool outside = false;
       m_user.getIP();
       if (m_user.multipleLogins()) {
         cout << col_red << "Error# 24: You are logged in from multiple locations." << endl
