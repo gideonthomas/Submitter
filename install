@@ -15,6 +15,11 @@ if [ $resp == Y ] || [ $resp == y ]; then
   fi
   chmod 711 ~/submitter_files
   cp template.cfg ~/submitter_files/.
+  if [ -f ~/submitter_files/accommodations.cfg ]; then
+     echo "accommodations.cfg already exist and will be backed up in"
+     echo "  accommodations.cfg.backup"
+     cp ~/submitter_files/accommodations.cfg ~/submitter_files/accommodations.cfg.backup
+  fi
   cp accommodations.cfg ~/submitter_files/.
   echo "installation complete"
 else
