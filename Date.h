@@ -37,6 +37,11 @@ namespace sict{
     bool operator>(const Date& D)const;
     bool operator<=(const Date& D)const;
     bool operator>=(const Date& D)const;
+    bool sameDate(const Date& D)const;
+    Date& operator++();
+    Date& addMin();
+    Date& operator+=(int days); //adds number of days to the date;
+    Date& addMin(int minutes);
     std::istream& read(std::istream& is = std::cin);
     std::ostream& write(std::ostream& os = std::cout)const;
     int errCode()const;

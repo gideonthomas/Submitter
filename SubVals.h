@@ -7,19 +7,20 @@
 namespace sict{
   class SubVals;
   class SubVal{
-    std::string _key;
-    Vals _value;
+    std::string m_key;
+    Vals m_value;
     SubVal(std::string& key, Vals& value);
     friend class SubVals;
   };
   class SubVals{
-    Vals _nothing;
-    std::vector<SubVal> _vals;
+    Vals m_nothing;
+    std::vector<SubVal> m_vals;
   public:
     void add(std::string key, Vals value);
     bool exist(const char* key)const;
     Vals& operator[](const char* key);
     std::string& operator[](int index);
+    Vals& values(int index);
     int size();
   };
 }

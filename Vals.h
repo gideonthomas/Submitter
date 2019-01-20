@@ -9,9 +9,9 @@ namespace sict{
   // a class to parse and hold delimeter seperated values
   // a delimeter can not be a white space character
   class Vals :public std::string{
-    std::string _nothing;
-    char _delim;
-    std::vector<std::string> _values;
+    std::string m_nothing;
+    char m_delim;
+    std::vector<std::string> m_values;
     void set();
     static std::string trim(std::string s);
   public:

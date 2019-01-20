@@ -96,6 +96,53 @@ namespace sict{
   bool Date::operator>=(const Date& D)const{ 
     return !operator<(D);
   }
+  bool Date::sameDate(const Date& D)const {
+    return D.m_day == m_day && D.m_mon == m_mon && D.m_year == m_year;
+  }
+  Date& Date::operator++() {
+    m_day++;
+    if (m_day > mdays()) {
+      m_day = 1;
+      m_mon++;
+    }
+    if (m_mon > 12) {
+      m_mon = 1;
+      m_year++;
+    }
+    return *this;
+  }
+  Date&  Date::operator+=(int days) { //adds number of days to the date;
+    if (days > 0) {
+      for (int i = 0; i < days; i++) {
+        operator++();
+      }
+    }
+    return *this;
+  }
+  Date& Date::addMin() {
+    m_min++;
+    if (m_min > 59) {
+      m_hour++;
+      m_min = 0;
+    }
+    if (m_hour > 23) {
+      m_hour = 0;
+      operator++();
+    }
+    return *this;
+  }
+  Date&  Date::addMin(int mins) {
+    if (mins > 0) {
+      int days = mins / 1440;
+      mins = mins % 1440;
+      operator+=(days);
+      for (int i = 0; i < mins; i++) {
+        addMin();
+      }
+    }
+    return *this;
+  }
+
   istream& Date::read(istream& is){
     char ch = '!';
     m_readErrorCode = 0;

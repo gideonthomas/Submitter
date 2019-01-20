@@ -5,6 +5,7 @@
 #include "SubVals.h"
 #include "Command.h"
 #include "Date.h"
+#include "User.h"
 // define statements
 
 //  version
@@ -22,6 +23,11 @@
 #endif
 #define SUB_CFG_FILE "submitter.cfg"
 
+//    accommodation file
+#ifdef SUB_ACC_FILE
+# undef SUB_ACC_FILE
+#endif
+#define SUB_ACC_FILE "accommodations.cfg"
 
 //    program default directory for assignment configuration files
 #ifdef SUB_DEF_DIR
@@ -33,28 +39,31 @@
 
 namespace sict{
   class Submitter{
-    bool _ok2submit;
-    bool _late;
-    bool _skipSpaces;
-    bool _skipNewlines;
-    std::string _lateTitle;
-    Date _now;
-    Date _dueDate;
-    Date _cutoffDate;
-    Date _rejectionDate;
-    int _argc;
-    char** _argv;
-    std::string _home;
-    std::string _submitterDir;
-    std::string _configFileName;
-    SubVals _asVals;
-   /* SubVals _subVals;*/
-    Command _cls;
+    User m_user;
+    bool m_ok2submit;
+    bool m_late;
+    bool m_skipSpaces;
+    bool m_skipNewlines;
+    std::string m_lateTitle;
+    int m_accommExtension;
+    std::string m_accommTitle;
+    Date m_now;
+    Date m_dueDate;
+    Date m_rejectionDate;
+    int m_argc;
+    char** m_argv;
+    std::string m_home;
+    std::string m_submitterDir;
+    std::string m_configFileName;
+    SubVals m_asVals;
+    SubVals m_accom; 
+    Command m_cls;
     void setSubmitterDir();
     void clrscr()const;
     bool yes()const;
     bool getAssignmentValues();
-    /*bool getSubmitterValues();  for future global config settings like color */
+    bool assignmentMatch(std::string assignmentName)const;
+    bool getAccommodation();
     bool copyProfFiles();
     bool filesExist();
     bool compareOutputs(int from, int to);
