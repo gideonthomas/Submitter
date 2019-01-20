@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.2 location restriction, accommodations"
+#define SUBMITTER_VERSION "0.99.3 submission location restriction, accommodations, publish date"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
@@ -50,6 +50,7 @@ namespace sict{
     Date m_now;
     Date m_dueDate;
     Date m_rejectionDate;
+    Date m_publishDate;
     int m_argc;
     char** m_argv;
     std::string m_home;

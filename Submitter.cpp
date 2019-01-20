@@ -559,7 +559,8 @@ namespace sict {
 #endif
     cout << col_grey << "Submitter (V" << SUBMITTER_VERSION << ")" << endl;
     cout << "by Fardad S. (Last update: " << SUBMITTER_DATE << ")" << endl
-      << "===============================================================" << col_end << endl << endl;
+      << "===============================================================" << col_end << endl << 
+      col_white << "System date and time: " << m_now << col_end << endl << endl;
     // if the command has valid format
     if (m_argc < 2 || m_argc > 4) {
       printCommandSyntaxHelp();
@@ -594,7 +595,7 @@ namespace sict {
     if (m_asVals.exist("allowed_ips")) {
       m_user.getIP();
       if (m_user.multipleLogins()) {
-        cout << col_red << "Error# 24: You are logged in from multiple locations." << endl
+        cout << col_red << "You are logged in from multiple locations." << endl
           << "Please logoff from all other sessions and try again." << col_end << endl;
         bad = 24;
       }
@@ -606,12 +607,28 @@ namespace sict {
           }
         }
         if (bad) {
-          cout << col_red << "Error# 25: You can not submit from this location." << endl
+          cout << col_red << "You can not submit from this location!" << endl
             << "If this seems to be a mistake, please notify your professor." << col_end << endl;
         }
       }
     }
-    if (!bad && m_asVals.exist("rejection_date")) {
+    if (!bad && m_asVals.exist("publish_date")) {
+      std::stringstream ssReject;
+      ssReject << m_asVals["publish_date"][0];
+      m_publishDate.read(ssReject);
+      if (m_publishDate.bad()) {
+        cout << "Bad publicatoin date format in config file." << endl
+          << "Please report this to your professor." << endl;
+        bad = 22;
+      }
+      else if (m_now < m_publishDate) {
+        cout << col_red << "*** "<<m_configFileName<<" is not open for submission yet ***" << col_end << endl
+          << m_configFileName << " will open for submission on " << m_publishDate << "." << endl
+          << "If you believe this to be an error, please discuss with your professor." << endl;
+        m_ok2submit = false;
+      }
+    }
+    if (m_ok2submit && !bad && m_asVals.exist("rejection_date")) {
       std::stringstream ssReject;
       ssReject << m_asVals["rejection_date"][0];
       m_rejectionDate.read(ssReject);
