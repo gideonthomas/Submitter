@@ -163,20 +163,23 @@ namespace sict {
     return ret;
   }
   bool Submitter::filesExist() {
-    Vals& files = m_asVals["assess_files"];
-    bool ret = files.size() > 0;
-    ifstream file;
-    int i;
-    for (i = 0; ret && i < files.size(); i++) {
-      file.open(files[i]);
-      if (!file) {
-        m_ok2submit = ret = false;
-        cout << files[i] << ", is missing!" << endl;
+    bool ret = true;
+    if (m_asVals.exist("assess_files")) {
+      Vals& files = m_asVals["assess_files"];
+      ret = files.size() > 0;
+      ifstream file;
+      int i;
+      for (i = 0; ret && i < files.size(); i++) {
+        file.open(files[i]);
+        if (!file) {
+          m_ok2submit = ret = false;
+          cout << files[i] << ", is missing!" << endl;
+        }
+        else {
+          file.close();
+        }
+        file.clear();
       }
-      else {
-        file.close();
-      }
-      file.clear();
     }
     return ret;
   }
