@@ -12,11 +12,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.3 submission location restriction, accommodations, publish date"
+#define SUBMITTER_VERSION "0.99.4 location restriction, accommodations, publish date, view due dates"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "20/Jan/2019"
+#define SUBMITTER_DATE "23/Jan/2019"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -44,6 +44,7 @@ namespace sict{
     bool m_late;
     bool m_skipSpaces;
     bool m_skipNewlines;
+    bool m_dueOnly;
     std::string m_lateTitle;
     int m_accommExtension;
     std::string m_accommTitle;
@@ -81,6 +82,7 @@ namespace sict{
     void printCommandSyntaxHelp()const;
     bool checkAndSetOption(std::string option);
     static bool isEmptyLine(const char* line);
+    int printDueDates();
   public:
     Submitter(int argc, char** argv);
     int run();
