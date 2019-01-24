@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.5 added Accommodation by minutes"
+#define SUBMITTER_VERSION "0.99.5.1 Added assign_name to due dates listing"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif

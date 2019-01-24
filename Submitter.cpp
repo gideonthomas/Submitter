@@ -540,7 +540,7 @@ namespace sict {
     string title;
     Date dueDate;
     std::stringstream ssDue;
-    cout << col_pink << "Listing " << m_accommTitle <<" due dates:" << col_end << endl;
+    cout << col_pink << "Listing " << m_asVals["assessment_name"][0] <<" "<< m_accommTitle <<" due dates:" << col_end << endl;
     if (m_asVals.exist("publish_date")) {
       ssDue << m_asVals["publish_date"][0];
       dueDate.read(ssDue);
