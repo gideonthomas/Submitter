@@ -541,7 +541,7 @@ namespace sict {
         bad = 22;
       }
       else {
-        cout << col_green << "Submissions are open after " << dueDate << "." << col_end << endl;
+        cout << col_cyan << "Submissions are open after " << dueDate << "." << col_end << endl;
       }
     }
     if (!bad && m_asVals.exist("due_dates")) {
