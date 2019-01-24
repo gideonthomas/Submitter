@@ -21,7 +21,7 @@ namespace sict {
     m_cls("clear"){
     m_argc = argc;
     m_argv = argv;
-    m_accommExtension = 0;
+    m_accommExtMins = m_accommExtension = 0;
     m_dueOnly = m_skipNewlines = m_skipSpaces = false;
     if (m_argc >= 2) m_configFileName = argv[1];
     size_t last = m_home.find_last_of('/');
@@ -86,6 +86,8 @@ namespace sict {
     file.close();
     if (ok) {
       int i;
+      int extRet;
+      char min;
       /*for (i = 0; i < m_accom.size(); i++) {
         cout << m_accom.value(i)[0] << endl;
       }*/
@@ -93,10 +95,17 @@ namespace sict {
         if (!m_asVals["subject_code"].compare(0, m_accom[i].size(), m_accom[i])) { // subject matches
           if (m_accom.values(i).size() > 3) { // if assignment name and extension days available with at least one username
             if (assignmentMatch(m_accom.values(i)[0])) {
-              if (sscanf(m_accom.values(i)[2].c_str(), "%d", &extension) == 1) {
+              min = 'x';
+              extRet = sscanf(m_accom.values(i)[2].c_str(), "%d%c", &extension,&min);
+              if (extRet == 1 || extRet == 2) {
                 for (int j = 3; j < m_accom.values(i).size(); j++) {
                   if (m_user == m_accom.values(i)[j]) {
-                    m_accommExtension += extension;
+                    if (extRet == 2 && min == 'M') {
+                      m_accommExtMins += extension;
+                    }
+                    else{
+                      m_accommExtension += extension;
+                    }
                     if (!firstTitle) m_accommTitle += " & ";
                     else firstTitle = false;
                     m_accommTitle += m_accom.values(i)[1];
@@ -562,6 +571,7 @@ namespace sict {
           }
           else {
             dueDate += m_accommExtension;
+            dueDate.addMin(m_accommExtMins);
             if (first) {
               cout << col_green << "On time submission before " << dueDate << col_end << endl;
               first = false;
@@ -586,6 +596,7 @@ namespace sict {
         ssDue << m_asVals["rejection_date"][0];
         dueDate.read(ssDue);
         dueDate += m_accommExtension;
+        dueDate.addMin(m_accommExtMins);
         if (dueDate.bad()) {
           cout << "Error# 22.1Bad rejection date format in config file." << endl
             << "Please report this to your professor." << endl;
@@ -719,6 +730,7 @@ namespace sict {
         ssReject << m_asVals["rejection_date"][0];
         m_rejectionDate.read(ssReject);
         m_rejectionDate += m_accommExtension;
+        m_rejectionDate.addMin(m_accommExtMins);
         if (m_rejectionDate.bad()) {
           cout << "Bad rejection date format in config file." << endl
             << "Please report this to your professor." << endl;
@@ -806,6 +818,7 @@ namespace sict {
                 bad = 20;
               }
               m_dueDate += m_accommExtension;
+              m_dueDate.addMin(m_accommExtMins);
               if (m_now > m_dueDate) {
                 m_late = true;
               }

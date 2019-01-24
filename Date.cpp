@@ -175,7 +175,7 @@ namespace sict{
   ostream& Date::write(ostream& os)const{ 
     os << right << m_year << "/" << setw(2) << setfill('0') << m_mon << "/"
       << setw(2) << setfill('0') << m_day;
-      os <<", " << setw(2) << setfill('0') << m_hour << ":" << setw(2) << setfill('0') << m_min;
+      os <<" - " << setw(2) << setfill('0') << m_hour << ":" << setw(2) << setfill('0') << m_min;
     return os;
   }
   ostream& operator<<(ostream& os, const Date& RO){ 

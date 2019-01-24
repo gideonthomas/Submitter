@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.4.1 rejection date display bug fix"
+#define SUBMITTER_VERSION "0.99.5 added Accommodation by minutes"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
@@ -47,6 +47,7 @@ namespace sict{
     bool m_dueOnly;
     std::string m_lateTitle;
     int m_accommExtension;
+    int m_accommExtMins;
     std::string m_accommTitle;
     Date m_now;
     Date m_dueDate;
