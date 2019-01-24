@@ -547,6 +547,7 @@ namespace sict {
     if (!bad && m_asVals.exist("due_dates")) {
       int nl = m_asVals["due_dates"].size();
       int li = 0;
+      bool first = true;
       if (nl % 2 == 0) {
         while ( !bad && li < nl) {
           ssDue.clear();
@@ -561,6 +562,10 @@ namespace sict {
           }
           else {
             dueDate += m_accommExtension;
+            if (first) {
+              cout << col_green << "On time submission before " << dueDate << col_end << endl;
+              first = false;
+            }
             cout << col_yellow << (title.length() == 0 ? string("Late") : title) << " submission after " << dueDate << col_end << endl;
           }
         }
