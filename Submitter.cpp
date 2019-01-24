@@ -544,7 +544,6 @@ namespace sict {
         cout << col_green << "Submissions are open after " << dueDate << "." << col_end << endl;
       }
     }
-
     if (!bad && m_asVals.exist("due_dates")) {
       int nl = m_asVals["due_dates"].size();
       int li = 0;
@@ -576,6 +575,7 @@ namespace sict {
       cout << col_green << "No due dates are set for this submission..." << col_end << endl;
       cout << col_red << "Please refer to the documentation of the assignment!" << col_end << endl;
     }
+    ssDue.clear();
     if (!bad) {
       if (m_asVals.exist("rejection_date")) {
         ssDue << m_asVals["rejection_date"][0];
