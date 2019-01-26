@@ -5,6 +5,29 @@
 using namespace std;
 #include "Date.h"
 namespace sict{
+  const char Date::dayName[7][10] = {
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thrusday",
+    "Friday",
+    "Saturday"
+  };
+  const char* Date::weekday()const {
+    std::tm time_in = { 1, 1, 1, // second, minute, hour
+        m_day, m_mon-1,m_year - 1900 }; 
+    // 1-based day, 0-based month, year since 1900
+
+    std::time_t time_temp = std::mktime(&time_in);
+
+    //Note: Return value of localtime is not threadsafe, because it might be
+    // (and will be) reused in subsequent calls to std::localtime!
+    const std::tm * time_out = std::localtime(&time_temp);
+
+    //Sunday == 0, Monday == 1, and so on ...
+    return Date::dayName[time_out->tm_wday];
+  }
   int Date::curYear()const {
     time_t t = time(NULL);
     tm lt = *localtime(&t);
@@ -173,7 +196,7 @@ namespace sict{
   }
 
   ostream& Date::write(ostream& os)const{ 
-    os << right << m_year << "/" << setw(2) << setfill('0') << m_mon << "/"
+    os <<weekday()<<", "<< right << m_year << "/" << setw(2) << setfill('0') << m_mon << "/"
       << setw(2) << setfill('0') << m_day;
       os <<" - " << setw(2) << setfill('0') << m_hour << ":" << setw(2) << setfill('0') << m_min;
     return os;
