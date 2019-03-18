@@ -10,7 +10,7 @@ namespace sict{
     "Monday",
     "Tuesday",
     "Wednesday",
-    "Thrusday",
+    "Thursday",
     "Friday",
     "Saturday"
   };

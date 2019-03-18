@@ -12,11 +12,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.5.2 Added day names to date listings"
+#define SUBMITTER_VERSION "0.99.5.3 day names spelling"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "26/Jan/2019"
+#define SUBMITTER_DATE "18/Mar/2019"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
