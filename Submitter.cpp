@@ -485,7 +485,7 @@ namespace sict {
                 << "Correct output file: " << getFilename(m_asVals["correct_output"][0].c_str()) << endl << endl;
             }
             else {
-              cout << "Success!... Outputs match." << endl;
+              cout << col_green << "Success!... Outputs match." << col_end << endl;
             }
           }
           else {
@@ -856,7 +856,7 @@ namespace sict {
 
         if (!bad && m_asVals["compile"][0] == "yes") {
           if ((bad = compile()) == 0) {
-            cout << "Success! no errors or warnings..." << endl;
+            cout << col_green << "Success! no errors or warnings..." << col_end << endl;
           }
         }
         if (!bad && m_asVals["execute"][0] == "yes") {
