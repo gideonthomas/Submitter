@@ -238,9 +238,21 @@ namespace sict {
     }
     return ok;
   }
+  const char*  Submitter::getFilename(const char* path) {
+    const char* fname = path;
+    int len = strlen(path);
+    int i = len - 1;
+    while (i >= 0 && path[i] != '/') {
+      i--;
+    }
+    if (i >= 0) {
+      fname = &path[i + 1];
+    }
+    return fname;
+  }
   bool Submitter::removeBS(const char* filename) {
     bool good = true;
-    fstream file(filename, ios::in);
+    fstream file(getFilename(filename), ios::in);
     if (!file) {
       cout << "Error #17.1: could not open " << filename << endl;
       good = false;
@@ -266,7 +278,7 @@ namespace sict {
       }
       buf[i] = 0;
       file.close();
-      file.open(filename, ios::out);
+      file.open(getFilename(filename), ios::out);
       if (!file) {
         cout << "Error #17.2: could not open " << filename << " for output" << endl;
         good = false;
@@ -315,13 +327,13 @@ namespace sict {
     int pline = 0;
     int sline = 0;
     ifstream stfile(m_asVals["output_file"][0].c_str());
-    ifstream prfile(m_asVals["correct_output"][0].c_str());
+    ifstream prfile(getFilename(m_asVals["correct_output"][0].c_str()));
     if (!stfile) {
       cout << "Error #17: could not open " << m_asVals["output_file"][0] << endl;
       good = false;
     }
     if (!prfile) {
-      cout << "Error #17: could not open " << m_asVals["correct_output"][0] << endl;
+      cout << "Error #17: could not open " << getFilename(m_asVals["correct_output"][0].c_str()) << endl;
       good = false;
     }
     while (pline < to && good && stfile && prfile) {
@@ -470,7 +482,7 @@ namespace sict {
               cout << "To see exactly what is wrong, open the following two files in this" << endl
                 << "directory and compare them: " << endl
                 << "Your output file:    " << m_asVals["output_file"][0].c_str() << endl
-                << "Correct output file: " << m_asVals["correct_output"][0].c_str() << endl << endl;
+                << "Correct output file: " << getFilename(m_asVals["correct_output"][0].c_str()) << endl << endl;
             }
             else {
               cout << "Success!... Outputs match." << endl;

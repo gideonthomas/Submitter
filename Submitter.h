@@ -80,6 +80,7 @@ namespace sict{
     const char* name();
     bool submit(std::string& toEmail, bool Confirmation = false); // if confirmation is ture then work will be submitted to student
     bool removeBS(const char* filename);
+    static const char* getFilename(const char* path);
     void printCommandSyntaxHelp()const;
     bool checkAndSetOption(std::string option);
     static bool isEmptyLine(const char* line);
