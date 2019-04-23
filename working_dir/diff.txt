@@ -1,14 +1,14 @@
-In line number 10 of your output:
+In line number 5 of your output:
 The output should be:
-Script done on Mon 14 Jan 2019 09:23:17 AM EST
-                                  ^
+Enter the day of the month:4
+                           ^
 But your output is: 
-Script done on Mon 14 Jan 2019 09:30:34 AM EST
-                                  ^
+Enter the day of the month:       4
+                           ^
 
 Unmatched character details:
-The character in column 35 is supposed to be:
-  [2] ASCII code(50)
+The character in column 28 is supposed to be:
+  [4] ASCII code(52)
 but you printed
-  [3] ASCII code(51)
+  [Space] ASCII code(32)
 

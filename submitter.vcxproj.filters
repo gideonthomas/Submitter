@@ -36,6 +36,9 @@
     <ClCompile Include="Line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vals.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -94,6 +100,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="install">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="working_dir\submitter_files\accommodations.cfg">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -14,6 +14,7 @@ namespace sict{
   const bool DATE_ONLY = true;
   class Date{
   private:
+    static const char dayName[7][10];
     int m_year;
     int m_mon;
     int m_day;
@@ -31,12 +32,18 @@ namespace sict{
     Date(int year, int mon, int day, int hour, int min = 0);
     Date(std::stringstream& theDate);
     void set();
+    const char* weekday()const;
     bool operator==(const Date& D)const;
     bool operator!=(const Date& D)const;
     bool operator<(const Date& D)const;
     bool operator>(const Date& D)const;
     bool operator<=(const Date& D)const;
     bool operator>=(const Date& D)const;
+    bool sameDate(const Date& D)const;
+    Date& operator++();
+    Date& addMin();
+    Date& operator+=(int days); //adds number of days to the date;
+    Date& addMin(int minutes);
     std::istream& read(std::istream& is = std::cin);
     std::ostream& write(std::ostream& os = std::cout)const;
     int errCode()const;

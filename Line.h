@@ -5,11 +5,11 @@
 
 namespace sict {
   class Line {
-    const char* _line;
-    int _highlightIndex;
-    char _buf[81];
-    char _chName[39];
-    static bool _colored;
+    const char* m_line;
+    int m_highlightIndex;
+    char m_buf[81];
+    char m_chName[39];
+    static bool m_colored;
     static void copy(char* des, const char* src);  
     static void cat(char* des, const char* src); 
     static void cat(char* des, char src); 

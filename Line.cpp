@@ -4,38 +4,38 @@
 #include "debug.h"
 
 namespace sict {
-  bool Line::_colored = false;
-  Line::Line(const char* line, int highLight):_line(line), _highlightIndex(highLight) {
+  bool Line::m_colored = false;
+  Line::Line(const char* line, int highLight):m_line(line), m_highlightIndex(highLight) {
   }
   std::ostream& Line::display(std::ostream& os)const {
     int i = 0;
-    _colored = (&os == &std::cout);
-    while (_line[i]) {
-      if (i == _highlightIndex && _colored) os << col_red;
-      if (_line[i] == '\b') {  // don't think this is needed anymore since all the backspaces are removed!
+    m_colored = (&os == &std::cout);
+    while (m_line[i]) {
+      if (i == m_highlightIndex && m_colored) os << col_red;
+      if (m_line[i] == '\b') {  // don't think this is needed anymore since all the backspaces are removed!
         os << "\\b";
       }
       else {
-        os << _line[i];
+        os << m_line[i];
       }
-      if (i == _highlightIndex && _colored) os << col_end;
+      if (i == m_highlightIndex && m_colored) os << col_end;
       i++;
     }
-    if (_highlightIndex >= 0) {
+    if (m_highlightIndex >= 0) {
       os << std::endl;
-      for (i = 0; i < _highlightIndex; i++) os << " ";
-      if (_colored) os << col_red;
+      for (i = 0; i < m_highlightIndex; i++) os << " ";
+      if (m_colored) os << col_red;
       os << "^" ;
-      if (_colored) os << col_end;
+      if (m_colored) os << col_end;
     }
     return os;
   } 
   const char* Line::operator[](int index){
-    _buf[0] = 0;
-    if (_colored) copy(_buf, col_red);
-      cat(_buf, charName( _line[index]));
-    if (_colored) cat(_buf, col_end);
-    return _buf;
+    m_buf[0] = 0;
+    if (m_colored) copy(m_buf, col_red);
+      cat(m_buf, charName( m_line[index]));
+    if (m_colored) cat(m_buf, col_end);
+    return m_buf;
   }
   void Line::copy(char* des, const char* src) {
     while (*src) *des++ = *src++;
@@ -89,14 +89,14 @@ namespace sict {
       "Non printable char"
     };
     if (ch >= 33) {
-      _chName[0] = ch;
-      _chName[1] = '\0';
+      m_chName[0] = ch;
+      m_chName[1] = '\0';
       ch = 33;
     }
     else {
-      copy(_chName, chName[int(ch)]);
+      copy(m_chName, chName[int(ch)]);
     }
-    return _chName;
+    return m_chName;
   }
   std::ostream& operator<<(std::ostream& os, const Line& L) {
     return L.display(os);
