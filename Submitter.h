@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.5.4 Added subdirectory capability for configuration files "
+#define SUBMITTER_VERSION "0.99.5.4 Added subdirectory capability for configuration files"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
