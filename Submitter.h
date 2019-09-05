@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.5.4 Added subdirectory capability for configuration files"
+#define SUBMITTER_VERSION "0.99.6.0 Added Added UTF-8 Support"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
@@ -59,7 +59,7 @@ namespace sict{
     std::string m_submitterDir;
     std::string m_configFileName;
     SubVals m_asVals;
-    SubVals m_accom; 
+    SubVals m_accom;
     Command m_cls;
     void setSubmitterDir();
     void clrscr()const;
