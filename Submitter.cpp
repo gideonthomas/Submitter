@@ -943,7 +943,7 @@ namespace sict {
                      }
                   }
                   else {
-                     if (m_feedbackOnly) cout << col_green << endl << endl << "Passed the submitter tests, you can submit when the submission is open!" << endl << col_end;
+                     if (m_feedbackOnly) cout << col_green << endl << "Passed the submitter tests, you can submit when the submission is open!" << endl << col_end;
                      else cout << col_red << "Submission aborted by user!" << endl << col_end;
                   }
                }

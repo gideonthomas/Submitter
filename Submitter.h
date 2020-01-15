@@ -12,11 +12,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.6.0 Added Added UTF-8 Support"
+#define SUBMITTER_VERSION "0.99.7.0 Added -feedback option"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "15/Apr/2019"
+#define SUBMITTER_DATE "2020-01-14"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
