@@ -527,8 +527,7 @@ namespace sict {
       cout << "       Do the submission regardless of incorrect vertical spacing." << endl;
       cout << "       This option may attract penalty." << endl;
       cout << "  \"" << col_cyan << "-feedback" << col_end << "\":" << endl;
-      cout << "       Check the program without submission or submit the work for feedback only." << endl;
-      cout << "       You will not get any mark for this submission." << endl;
+      cout << "       Check the program execution without submission." << endl;
    }
    bool Submitter::checkAndSetOption(string option) {
       bool ok = true;
