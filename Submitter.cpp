@@ -786,12 +786,19 @@ namespace sict {
          if (m_ok2submit) {
             if (!bad) {
                // if Assignment name is set in the assignment spcs files
+              
                if (m_asVals.exist("assessment_name")) {
-                  if (m_asVals.exist("submit_files")) {
-                     cout << "Submitting";
+                  cout << col_pink;
+                  if (m_feedbackOnly) {
+                     cout << "Dry running";
                   }
                   else {
-                     cout << "Testing";
+                     if (m_asVals.exist("submit_files")) {
+                        cout << "Submitting";
+                     }
+                     else {
+                        cout << "Testing";
+                     }
                   }
                   if (m_skipSpaces || m_skipNewlines) {
                      cout << " (Skipping";
@@ -801,6 +808,7 @@ namespace sict {
                      cout << "): ";
                   }
                   cout << endl << name() << endl << endl;
+                  cout << col_end;
                }
                else { // otherwise exit with error
                   cout << "Error #3: \"assessment_name\" is not specified!" << endl
@@ -890,7 +898,7 @@ namespace sict {
                   cout << endl << "Submission: " << endl;
                   if (!bad && m_asVals.exist("due_dates")) {
                      if(m_feedbackOnly){
-                        cout << "*** This submission is for feedback only. Actual duedate: " << m_dueDate << " ***" << endl;
+                        cout << "*** This is for feedback only; Nothing will be submitted."<<endl<<"Actual duedate: " << m_dueDate << " ***" << endl;
                      }
                      else {
                         if (m_late) {
@@ -901,8 +909,8 @@ namespace sict {
                         }
                      }
                   }
-                  cout << "Would you like to submit this demonstration of " << name() << (m_feedbackOnly ? " for feedback only" : "") << "? (Y)es/(N)o: ";
-                  if (yes()) {
+                  if(!m_feedbackOnly) cout << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
+                  if (!m_feedbackOnly && yes()) {
                      if (submit(m_asVals["prof_email"][0])) {
                         cout << "Thank you!, Your work is now submitted." << endl;
                      }
@@ -940,7 +948,8 @@ namespace sict {
                      }
                   }
                   else {
-                     cout << "Submission aborted by user!" << endl;
+                     if (m_feedbackOnly) cout << "Passed the submitter tests, you can submit when the submission is open!" << endl;
+                     else cout << "Submission aborted by user!" << endl;
                   }
                }
                else {
@@ -956,10 +965,7 @@ namespace sict {
       Command email("echo \"");
       bool include_output_in_email = false;
       email += name();
-      if (m_feedbackOnly) {
-         email += " feedback only";
-      }
-      else if (m_late) {
+      if (m_late) {
          email += " ";
          email += m_lateTitle;
       }
@@ -971,7 +977,6 @@ namespace sict {
       }
       email += " ";
       email += m_accommTitle;
-      if (m_feedbackOnly) email += "feedback only ";
       email += "submission";
       if (Confirmation) email += " confirmation";
       email += " by `whoami`. Executed from ";
@@ -989,7 +994,6 @@ namespace sict {
          if (m_skipSpaces && m_skipNewlines) email += " and";
          if (m_skipNewlines) email += " newlines";
       }
-      if (m_feedbackOnly) email += " feedback only";
       email += " submission by `whoami`\" ";
       email += " -Sreplyto=`whoami`@myseneca.ca ";
       for (int i = 0; i < m_asVals["submit_files"].size(); i++) {
