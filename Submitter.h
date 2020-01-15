@@ -86,6 +86,7 @@ namespace sict{
     bool checkAndSetOption(std::string option);
     static bool isEmptyLine(const char* line);
     int printDueDates();
+    int error(int no, const char* message, bool report = true);
   public:
     Submitter(int argc, char** argv);
     int run();

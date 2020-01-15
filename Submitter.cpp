@@ -395,41 +395,35 @@ namespace sict {
             }
             if (m_asVals.exist("err_file")) {
                compile += (" 2> " + m_asVals["err_file"][0]);
-               cout << "Compiling:" << endl;
+               cout << col_yellow << "Compiling:" << endl;
                cout << compile << endl << endl
-                  << "Compile result:" << endl;
+                  << "Compile result:" <<  col_end <<endl;
                if ((errcode = compile.run()) != 0) {
-                  cout << "You have compilation errors. Please open \"" << m_asVals["err_file"][0] << "\" to veiw" << endl
-                     << "and correct them." << endl << "Submission aborted! (code: " << errcode << ")" << endl;
+                  cout << col_red << "You have compilation errors. Please open \"" << m_asVals["err_file"][0] << "\" to veiw" << endl
+                     << "and correct them." << endl << "Submission aborted! (code: " << errcode << ")" << col_end << endl;
                   m_ok2submit = false;
                   bad = 9;
                }
 
                if (!bad && m_asVals["allow_warning"][0] != "yes") {
                   if (Command("grep warning " + m_asVals["err_file"][0] + ">/dev/null").run() == 0) {
-                     cout << "You have compilation warnings. Please open \"" << m_asVals["err_file"][0] << "\" to veiw" << endl
-                        << "and correct them." << endl << "Submission aborted!" << endl;
+                     cout << col_red << "You have compilation warnings. Please open \"" << m_asVals["err_file"][0] << "\" to veiw" << endl
+                        << "and correct them." << endl << "Submission aborted!" << col_end << endl;
                      bad = 10;
                      m_ok2submit = false;
                   }
                }
             }
             else {
-               cout << "Error #8: error log filename not specified!" << endl
-                  << "Please report this to your professor." << endl;
-               bad = 8;
+               bad = error(8, "error log filename not specified!");
             }
          }
          else {
-            cout << "Error #7: file names to be compiled not specified!" << endl
-               << "Please report this to your professor." << endl;
-            bad = 7;
+            bad = error(7, "file names to be compiled not specified!");
          }
       }
       else {
-         cout << "Error #6: Compile command not found!" << endl
-            << "Please report this to your professor." << endl;
-         bad = 6;
+         bad = error(6, "Compile command not found!");
       }
 #ifdef SICT_DEBUG
       bad = 0;
@@ -438,24 +432,26 @@ namespace sict {
 
       return bad;
    }
+   int Submitter::error(int no, const char* message, bool report) {
+      cout << col_red << "Error #" << no << ": " << col_white << message << endl;
+      if(report) cout << "Please report this to your professor." << endl;
+      cout << col_end;
+      return no;
+   }
    int Submitter::execute() {
       int bad = 0;
       if (!m_asVals.exist("exe_name")) {
-         cout << "Error #11: executable filename not specified!" << endl
-            << "Please report this to your professor." << endl;
-         bad = 11;
+         bad = error(11, "executable filename not specified!");
       }
       else if (!m_asVals.exist("output_file")) {
-         cout << "Error #12: output filename not specified!" << endl
-            << "Please report this to your professor." << endl;
-         bad = 12;
+         bad = error(12, "output filename not specified!");
       }
       else {
          if (m_asVals["output_type"][0] == "script") {
-            cout << endl << "READ THE FOLLOWING CAREFULLY!" << endl;
-            cout << "I am about to execute the tester and capture the output in \"" << m_asVals["output_file"][0] << "\"" << endl;
+            cout << endl << col_red << "READ THE FOLLOWING CAREFULLY!" << col_end << endl;
+            cout << col_white << "I am about to execute the tester and capture the output in \"" << m_asVals["output_file"][0] << "\"" << endl;
             cout << "Please enter the values carefuly and exactly as instructed." << endl
-               << "Press <ENTER> to start...";
+               << "Press <ENTER> to start..." << col_end;
             cin.ignore(1000, '\n');
             clrscr();
             Command("script " + m_asVals["output_file"][0] + " -c " + m_asVals["exe_name"][0]).run();
@@ -478,11 +474,13 @@ namespace sict {
                   if (!removeBS(m_asVals["correct_output"][0].c_str())) bad = 17;
                   if (!compareOutputs(from, to)) {
                      bad = 18;
-                     cout << "Outputs don't match. Submission aborted!" << endl << endl;
-                     cout << "To see exactly what is wrong, open the following two files in this" << endl
+                     cout << col_red << "Outputs don't match. ";
+                     if (!m_feedbackOnly) cout << "Submission aborted!";
+                     cout << col_end << endl << endl;
+                     cout << col_white << "To see exactly what is wrong, open the following two files in this" << endl
                         << "directory and compare them: " << endl
-                        << "Your output file:    " << m_asVals["output_file"][0].c_str() << endl
-                        << "Correct output file: " << getFilename(m_asVals["correct_output"][0].c_str()) << endl << endl;
+                        << "Your output file:    " << col_cyan << m_asVals["output_file"][0].c_str() << endl << col_white
+                        << "Correct output file: " << col_cyan << getFilename(m_asVals["correct_output"][0].c_str()) << col_end << endl << endl;
                   }
                   else {
                      cout << col_green << "Success!... Outputs match." << col_end << endl;
@@ -678,7 +676,7 @@ namespace sict {
          << "===============================================================" << col_end << endl <<
          col_white << "System date and time: " << m_now << col_end << endl << endl;
       // if the command has valid format
-      if (m_argc < 2 || m_argc > 4) {
+      if (m_argc < 2 || m_argc > 5) {
          printCommandSyntaxHelp();
          bad = 1;
       }
@@ -731,39 +729,41 @@ namespace sict {
                }
             }
          }
-         if (!bad && m_asVals.exist("publish_date")) {
-            std::stringstream ssReject;
-            ssReject << m_asVals["publish_date"][0];
-            m_publishDate.read(ssReject);
-            if (m_publishDate.bad()) {
-               cout << "Bad publicatoin date format in config file." << endl
-                  << "Please report this to your professor." << endl;
-               bad = 22;
-            }
-            else if (m_now < m_publishDate) {
-               cout << col_red << "*** " << m_configFileName << " is not open for submission yet ***" << col_end << endl
-                  << m_configFileName << " will open for submission on " << m_publishDate << "." << endl
-                  << "If you believe this to be an error, please discuss with your professor." << endl;
-               m_ok2submit = false;
-            }
-         }
-         if (m_ok2submit && !bad && m_asVals.exist("rejection_date")) {
-            if (!m_feedbackOnly) {
+         if (!m_feedbackOnly) {
+            if (!bad && m_asVals.exist("publish_date")) {
                std::stringstream ssReject;
-               ssReject << m_asVals["rejection_date"][0];
-               m_rejectionDate.read(ssReject);
-               m_rejectionDate += m_accommExtension;
-               m_rejectionDate.addMin(m_accommExtMins);
-               if (m_rejectionDate.bad()) {
-                  cout << "Bad rejection date format in config file." << endl
+               ssReject << m_asVals["publish_date"][0];
+               m_publishDate.read(ssReject);
+               if (m_publishDate.bad()) {
+                  cout << "Bad publicatoin date format in config file." << endl
                      << "Please report this to your professor." << endl;
                   bad = 22;
                }
-               else if (m_now > m_rejectionDate) {
-                  cout << col_red << "*** Submission Rejected! ***" << col_end << endl
-                     << "The deadline for this " << m_accommTitle << "submission has passed(Due: " << m_rejectionDate << ")." << endl
+               else if (m_now < m_publishDate) {
+                  cout << col_red << "*** " << m_configFileName << " is not open for submission yet ***" << col_end << endl
+                     << m_configFileName << " will open for submission on " << m_publishDate << "." << endl
                      << "If you believe this to be an error, please discuss with your professor." << endl;
                   m_ok2submit = false;
+               }
+            }
+            if (m_ok2submit && !bad && m_asVals.exist("rejection_date")) {
+               if (!m_feedbackOnly) {
+                  std::stringstream ssReject;
+                  ssReject << m_asVals["rejection_date"][0];
+                  m_rejectionDate.read(ssReject);
+                  m_rejectionDate += m_accommExtension;
+                  m_rejectionDate.addMin(m_accommExtMins);
+                  if (m_rejectionDate.bad()) {
+                     cout << "Bad rejection date format in config file." << endl
+                        << "Please report this to your professor." << endl;
+                     bad = 22;
+                  }
+                  else if (m_now > m_rejectionDate) {
+                     cout << col_red << "*** Submission Rejected! ***" << col_end << endl
+                        << "The deadline for this " << m_accommTitle << "submission has passed(Due: " << m_rejectionDate << ")." << endl
+                        << "If you believe this to be an error, please discuss with your professor." << endl;
+                     m_ok2submit = false;
+                  }
                }
             }
          }
@@ -788,15 +788,18 @@ namespace sict {
                // if Assignment name is set in the assignment spcs files
               
                if (m_asVals.exist("assessment_name")) {
-                  cout << col_pink;
+                 
                   if (m_feedbackOnly) {
+                     cout << col_yellow;
                      cout << "Dry running";
                   }
                   else {
                      if (m_asVals.exist("submit_files")) {
+                        cout << col_green;
                         cout << "Submitting";
                      }
                      else {
+                        cout << col_blue;
                         cout << "Testing";
                      }
                   }
@@ -831,7 +834,7 @@ namespace sict {
             }
 
 
-            if (!bad && m_asVals.exist("due_dates")) {
+            if (!bad && !m_feedbackOnly && m_asVals.exist("due_dates")) {
                int li = m_asVals["due_dates"].size();
                if (li % 2 == 0) {
                   std::stringstream ssDue;
@@ -862,17 +865,12 @@ namespace sict {
                   bad = 20;
                }
                if (!bad) {
-                  if (m_feedbackOnly) {
-                     cout << col_green << "FEEDBACK ONLY!" << col_end << endl << endl;
+                  if (m_late) {
+                     if (m_lateTitle.length() == 0) m_lateTitle.assign("LATE");
+                     cout << col_yellow << m_lateTitle << "!" << col_end << endl << endl;
                   }
                   else {
-                     if (m_late) {
-                        if (m_lateTitle.length() == 0) m_lateTitle.assign("LATE");
-                        cout << col_yellow << m_lateTitle << "!" << col_end << endl << endl;
-                     }
-                     else {
-                        cout << col_green << "ON TIME." << col_end << endl << endl;
-                     }
+                     cout << col_green << "ON TIME." << col_end << endl << endl;
                   }
                }
             }
@@ -885,11 +883,11 @@ namespace sict {
                }
             }
             if (!bad && m_asVals["execute"][0] == "yes") {
-               cout << endl << "Testing execution:";
+               cout << endl << col_yellow << "Testing execution:" << col_end;
                bad = execute();
             }
             if (!bad && m_asVals["check_output"][0] == "yes") {
-               cout << endl << "Checking output:" << endl;
+               cout << endl << col_yellow << "Checking output:" << col_end << endl;
                bad = checkOutput();
             }
 
