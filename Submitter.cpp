@@ -810,8 +810,10 @@ namespace sict {
                      if (m_skipNewlines) cout << " blank lines";
                      cout << "): ";
                   }
-                  cout << endl << name() << endl << endl;
-                  cout << col_end;
+                  cout << endl << col_cyan << name() << endl;
+                  cout << col_yellow << endl << "Press <ENTER> to start:" << col_end;
+                  cin.ignore(1000, '\n');
+                  cout << endl; 
                }
                else { // otherwise exit with error
                   cout << "Error #3: \"assessment_name\" is not specified!" << endl
