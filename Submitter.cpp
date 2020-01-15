@@ -893,65 +893,60 @@ namespace sict {
 
             if (!bad && m_ok2submit) {
                if (m_asVals.exist("submit_files")) {
-                  cout << endl << "Submission: " << endl;
+                  cout << endl << col_yellow << "Submission: " << col_end << endl;
                   if (!bad && m_asVals.exist("due_dates")) {
                      if(m_feedbackOnly){
-                        cout << "*** This is for feedback only; Nothing will be submitted."<<endl<<"Actual duedate: " << m_dueDate << " ***" << endl;
+                        cout << col_green << "*** This is for feedback only; Nothing will be submitted."<<endl<<"Actual duedate: " << m_dueDate << " ***" << endl;
                      }
                      else {
                         if (m_late) {
-                           cout << "*** This " << m_accommTitle << "submission is " << m_lateTitle << "; the due date was: " << m_dueDate << " ***" << endl;
+                           cout << col_yellow << "*** This " << m_accommTitle << "submission is " << m_lateTitle << "; the due date was: " << m_dueDate << " ***" << endl;
                         }
                         else {
-                           cout << "On time " << m_accommTitle << "submission, due date: " << m_dueDate << endl << endl;
+                           cout << col_green << "On time " << m_accommTitle << "submission, due date: " << m_dueDate << endl << endl;
                         }
                      }
+                     cout << col_end;
                   }
-                  if(!m_feedbackOnly) cout << "Would you like to submit this demonstration of " << name() << "? (Y)es/(N)o: ";
+                  if(!m_feedbackOnly) cout << col_yellow << "Would you like to submit this demonstration of " << col_cyan << name() << col_yellow << "? (Y)es/(N)o: " << col_end;
                   if (!m_feedbackOnly && yes()) {
                      if (submit(m_asVals["prof_email"][0])) {
-                        cout << "Thank you!, Your work is now submitted." << endl;
+                        cout << col_green << "Thank you!, Your work is now submitted." << endl << col_end;
                      }
                      else {
-                        bad = 19;
-                        cout << "Error #19: email failed." << endl
-                           << "Please report this to your professor" << endl;
+                        bad = error(19, "Email failed.");
                      }
                      if (!bad) {
                         if (!m_asVals.exist("CC_student") || m_asVals["CC_student"][0] == "yes") {
                            if (submit(m_asVals["prof_email"][0], true)) {
-                              cout << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << endl;
+                              cout << col_green << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << col_end << endl;
                            }
                            else {
-                              bad = 19;
-                              cout << "Error #19: confirmation email failed." << endl
-                                 << "Please report this to your professor" << endl;
+                              bad = error(19, "Confirmation email failed.");
                            }
                         }
                      }
                      if (!bad && m_asVals["prof_email"].size() > 1) {
-                        cout << endl << "Would you like to submit a copy of this demonstration of " << name() << " to the TA for feedback? (Y)es/(N)o: ";
+                        cout << endl << col_yellow << "Would you like to submit a copy of this demonstration of " << col_cyan << name() << col_yellow << " to the TA for feedback? (Y)es/(N)o: ";
                         if (yes()) {
                            for (i = 1; i < signed(m_asVals["prof_email"].size()); i++) {
                               if (submit(m_asVals["prof_email"][i])) {
-                                 cout << "CC no " << i << " is sent to the TA for feedback." << endl;
+                                 cout <<col_green <<  "CC no " << i << " is sent to the TA for feedback." << col_end << endl;
                               }
                               else {
-                                 bad = 19;
-                                 cout << "Error #19: email CC failed." << endl
-                                    << "Please report this to your professor" << endl;
+                                 bad = error(19, "Email CC failed.");
                               }
                            }
                         }
                      }
                   }
                   else {
-                     if (m_feedbackOnly) cout << "Passed the submitter tests, you can submit when the submission is open!" << endl;
-                     else cout << "Submission aborted by user!" << endl;
+                     if (m_feedbackOnly) cout << col_green << "Passed the submitter tests, you can submit when the submission is open!" << endl << col_end;
+                     else cout << col_red << "Submission aborted by user!" << endl << col_end;
                   }
                }
                else {
-                  cout << "Test Successful!" << endl;
+                  cout << col_green << "Test Successful!" << col_end << endl;
                }
             }
          }
