@@ -896,7 +896,7 @@ namespace sict {
                   cout << endl << col_yellow << "Submission: " << col_end << endl;
                   if (!bad && m_asVals.exist("due_dates")) {
                      if(m_feedbackOnly){
-                        cout << col_red << "This is a dry run only; Nothing will be submitted." << endl
+                        cout << endl << col_red << "This is a dry run only; Nothing will be submitted." << endl << endl
                            << col_yellow << "Submission dates:" << col_end << endl;
                         printDueDates();
                      }
@@ -943,7 +943,7 @@ namespace sict {
                      }
                   }
                   else {
-                     if (m_feedbackOnly) cout << col_green << "Passed the submitter tests, you can submit when the submission is open!" << endl << col_end;
+                     if (m_feedbackOnly) cout << col_green << endl << endl << "Passed the submitter tests, you can submit when the submission is open!" << endl << col_end;
                      else cout << col_red << "Submission aborted by user!" << endl << col_end;
                   }
                }
