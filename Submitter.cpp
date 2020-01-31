@@ -442,6 +442,7 @@ namespace sict {
    int Submitter::checkOutput() {
       int bad = 0;
       int from = 0, to = 0;
+      bool warn = false;
       if (!removeBS(m_asVals["output_file"][0].c_str())) bad = 17;
       if (!bad && m_asVals.exist("comp_range")) {
          if (sscanf(m_asVals["comp_range"][0].c_str(), "%d", &from) == 1
@@ -463,8 +464,9 @@ namespace sict {
                      if(m_asVals.exist("check_valgrind") && (m_asVals["check_valgrind"][0] == "yes" || m_asVals["check_valgrind"][0] == "warn")){
                         if (Command("grep \"no leaks are possible\" " + m_asVals["output_file"][0] + ">/dev/null").run() != 0) {
                            if (m_asVals["check_valgrind"][0] == "warn") {
-                              cout << col_yellow << "The outputs matche but it looks like you a have memory leak in your program" << endl
-                                 << "You may submit your work, but it will possibly attract penlaty or total rejection" << endl << col_end;
+                              cout << col_yellow << "The outputs match but it looks like you a have memory leak in your program" << endl
+                                 << "You may submit your work, but it will possibly attract penalty or" << endl <<"total rejection." << endl << col_end;
+                              warn = true;
                            }
                            else {
                               cout << col_red << "The outputs match but it looks like you have memory leak!" << endl
@@ -474,7 +476,7 @@ namespace sict {
                            }
                         }
                      }
-                     if(!bad) {
+                     if(!bad && !warn) {
                         cout << col_green << "Success!... Outputs match." << col_end << endl;
                      }
                   }
