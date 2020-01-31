@@ -354,29 +354,6 @@ namespace sict {
          m_ok2submit = good = false;
          cout << "Your output file is too short or empty!" << endl;
       }
-      /*if (m_skipNewlines && good) {
-        do {
-          sline++;
-          stfile.getline(sstr, 4095, '\n');
-        } while (m_skipNewlines && isEmptyLine(sstr) && stfile);
-        if (!isEmptyLine(sstr)) {
-          m_ok2submit = good = false;
-          longFile = true;
-        }
-      }
-      else if(good){
-        stfile.getline(sstr, 4095, '\n');
-        if (stfile) {
-          m_ok2submit = good = false;
-          longFile = true;
-        }
-      }
-      if (longFile) {
-        cout << endl << col_red << "Your output file is too long!" << col_end << endl;
-        cout << "the following data found in your ouput where end of file was expected." << endl;
-        cout << Line(sstr, 0) << endl;
-        cout << "[" << Line(sstr)[0] << "] ASCII code(" << int(sstr[0]) << ")" << endl << endl;
-      }*/
       return good;
    }
    int Submitter::compile() {
