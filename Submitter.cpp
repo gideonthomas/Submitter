@@ -460,7 +460,23 @@ namespace sict {
                         << "Correct output file: " << col_cyan << getFilename(m_asVals["correct_output"][0].c_str()) << col_end << endl << endl;
                   }
                   else {
-                     cout << col_green << "Success!... Outputs match." << col_end << endl;
+                     if(m_asVals.exist("check_valgrind") && (m_asVals["check_valgrind"][0] == "yes" || m_asVals["check_valgrind"][0] == "warn")){
+                        if (Command("grep \"no leaks are possible\" " + m_asVals["output_file"][0] + ">/dev/null").run() == 0) {
+                           if (m_asVals["check_valgrind"][0] == "warn") {
+                              cout << col_yellow << "The outputs matche but it looks like you a have memory leak in your program" << endl
+                                 << "You may submit your work, but it will possibly attract penlaty or total rejection" << endl;
+                           }
+                           else {
+                              cout << col_red << "The outputs match but it looks like you have memory leak!" << endl
+                                 << "Please check the file " << m_asVals["output_file"][0] << " for more detail" << endl
+                                 << "and fix the problem." << endl;
+                              bad = 18;
+                           }
+                        }
+                     }
+                     if(!bad) {
+                        cout << col_green << "Success!... Outputs match." << col_end << endl;
+                     }
                   }
                }
                else {
