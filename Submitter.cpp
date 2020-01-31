@@ -22,7 +22,7 @@ namespace sict {
       m_argc = argc;
       m_argv = argv;
       m_accommExtMins = m_accommExtension = 0;
-      m_dueOnly = m_skipNewlines = m_skipSpaces = false;
+      m_memLeak = m_dueOnly = m_skipNewlines = m_skipSpaces = false;
       if (m_argc >= 2) m_configFileName = argv[1];
       size_t last = m_home.find_last_of('/');
       if (last != string::npos) {
@@ -442,7 +442,6 @@ namespace sict {
    int Submitter::checkOutput() {
       int bad = 0;
       int from = 0, to = 0;
-      bool warn = false;
       if (!removeBS(m_asVals["output_file"][0].c_str())) bad = 17;
       if (!bad && m_asVals.exist("comp_range")) {
          if (sscanf(m_asVals["comp_range"][0].c_str(), "%d", &from) == 1
@@ -466,7 +465,7 @@ namespace sict {
                            if (m_asVals["check_valgrind"][0] == "warn") {
                               cout << col_yellow << "The outputs match but it looks like you a have memory leak in your program" << endl
                                  << "You may submit your work, but it will possibly attract penalty or" << endl <<"total rejection." << endl << col_end;
-                              warn = true;
+                              m_memLeak = true;
                            }
                            else {
                               cout << col_red << "The outputs match but it looks like you have memory leak!" << endl
@@ -476,7 +475,7 @@ namespace sict {
                            }
                         }
                      }
-                     if(!bad && !warn) {
+                     if(!bad && !m_memLeak) {
                         cout << col_green << "Success!... Outputs match." << col_end << endl;
                      }
                   }
@@ -979,11 +978,14 @@ namespace sict {
          email += " ";
          email += m_lateTitle;
       }
+      if (m_memLeak) {
+         email += " memLeak";
+      }
       if (m_skipSpaces || m_skipNewlines) {
-         email += " with bad";
+         email += " bad";
          if (m_skipSpaces) email += " spacing";
-         if (m_skipSpaces && m_skipNewlines) email += " and";
-         if (m_skipNewlines) email += " newlines";
+         if (m_skipSpaces && m_skipNewlines) email += " - ";
+         if (m_skipNewlines) email += " lines";
       }
       email += " submission by `whoami`\" ";
       email += " -Sreplyto=`whoami`@myseneca.ca ";

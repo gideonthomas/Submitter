@@ -46,6 +46,7 @@ namespace sict{
     bool m_skipNewlines;
     bool m_dueOnly;
     bool m_feedbackOnly;
+    bool m_memLeak;
     std::string m_lateTitle;
     int m_accommExtension;
     int m_accommExtMins;
