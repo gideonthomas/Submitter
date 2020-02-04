@@ -12,11 +12,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.7.0 Added -feedback option and color"
+#define SUBMITTER_VERSION "0.99.8.0 Added valgrind check"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "2020-01-14"
+#define SUBMITTER_DATE "2020-02-1"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
@@ -46,6 +46,7 @@ namespace sict{
     bool m_skipNewlines;
     bool m_dueOnly;
     bool m_feedbackOnly;
+    bool m_memLeak;
     std::string m_lateTitle;
     int m_accommExtension;
     int m_accommExtMins;

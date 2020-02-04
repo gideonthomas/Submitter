@@ -22,7 +22,7 @@ namespace sict {
       m_argc = argc;
       m_argv = argv;
       m_accommExtMins = m_accommExtension = 0;
-      m_dueOnly = m_skipNewlines = m_skipSpaces = false;
+      m_memLeak = m_dueOnly = m_skipNewlines = m_skipSpaces = false;
       if (m_argc >= 2) m_configFileName = argv[1];
       size_t last = m_home.find_last_of('/');
       if (last != string::npos) {
@@ -354,29 +354,6 @@ namespace sict {
          m_ok2submit = good = false;
          cout << "Your output file is too short or empty!" << endl;
       }
-      /*if (m_skipNewlines && good) {
-        do {
-          sline++;
-          stfile.getline(sstr, 4095, '\n');
-        } while (m_skipNewlines && isEmptyLine(sstr) && stfile);
-        if (!isEmptyLine(sstr)) {
-          m_ok2submit = good = false;
-          longFile = true;
-        }
-      }
-      else if(good){
-        stfile.getline(sstr, 4095, '\n');
-        if (stfile) {
-          m_ok2submit = good = false;
-          longFile = true;
-        }
-      }
-      if (longFile) {
-        cout << endl << col_red << "Your output file is too long!" << col_end << endl;
-        cout << "the following data found in your ouput where end of file was expected." << endl;
-        cout << Line(sstr, 0) << endl;
-        cout << "[" << Line(sstr)[0] << "] ASCII code(" << int(sstr[0]) << ")" << endl << endl;
-      }*/
       return good;
    }
    int Submitter::compile() {
@@ -483,7 +460,24 @@ namespace sict {
                         << "Correct output file: " << col_cyan << getFilename(m_asVals["correct_output"][0].c_str()) << col_end << endl << endl;
                   }
                   else {
-                     cout << col_green << "Success!... Outputs match." << col_end << endl;
+                     if(m_asVals.exist("check_valgrind") && (m_asVals["check_valgrind"][0] == "yes" || m_asVals["check_valgrind"][0] == "warn")){
+                        if (Command("grep \"no leaks are possible\" " + m_asVals["output_file"][0] + ">/dev/null").run() != 0) {
+                           if (m_asVals["check_valgrind"][0] == "warn") {
+                              cout << col_yellow << "The outputs match but it looks like you a have memory leak in your program" << endl
+                                 << "You may submit your work, but it will possibly attract penalty or" << endl <<"total rejection." << endl << col_end;
+                              m_memLeak = true;
+                           }
+                           else {
+                              cout << col_red << "The outputs match but it looks like you have memory leak!" << endl
+                                 << "Please check the file " << m_asVals["output_file"][0] << " for more detail" << endl
+                                 << "and fix the problem." << endl << col_end;
+                              bad = 18;
+                           }
+                        }
+                     }
+                     if(!bad && !m_memLeak) {
+                        cout << col_green << "Success!... Outputs match." << col_end << endl;
+                     }
                   }
                }
                else {
@@ -984,11 +978,14 @@ namespace sict {
          email += " ";
          email += m_lateTitle;
       }
+      if (m_memLeak) {
+         email += " memLeak";
+      }
       if (m_skipSpaces || m_skipNewlines) {
-         email += " with bad";
+         email += " bad";
          if (m_skipSpaces) email += " spacing";
-         if (m_skipSpaces && m_skipNewlines) email += " and";
-         if (m_skipNewlines) email += " newlines";
+         if (m_skipSpaces && m_skipNewlines) email += " - ";
+         if (m_skipNewlines) email += " lines";
       }
       email += " submission by `whoami`\" ";
       email += " -Sreplyto=`whoami`@myseneca.ca ";
