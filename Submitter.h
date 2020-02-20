@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.8.0 Added valgrind check"
+#define SUBMITTER_VERSION "0.99.8.1 Confirmation with no attachments"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
