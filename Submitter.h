@@ -16,7 +16,7 @@
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "2020-01-14"
+#define SUBMITTER_DATE "2020-02-1"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
