@@ -5,5 +5,5 @@ To use this, clone it on your linux machine, <br />
 $ git clone https://github.com/fardad/Submitter.git
 $ cd Submitter
 $ chmod 700 install
-$ ./install
+$ install
 </pre>

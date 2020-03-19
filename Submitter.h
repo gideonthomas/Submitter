@@ -12,11 +12,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.8.0 Added valgrind check"
+#define SUBMITTER_VERSION "0.99.8.1 Confirmation with no attachments"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "2020-02-1"
+#define SUBMITTER_DATE "2020-02-20"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE

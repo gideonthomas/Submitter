@@ -916,7 +916,7 @@ namespace sict {
                      if (!bad) {
                         if (!m_asVals.exist("CC_student") || m_asVals["CC_student"][0] == "yes") {
                            if (submit(m_asVals["prof_email"][0], true)) {
-                              cout << col_green << "Confirmation of the submission is sent to your \"myseneca.ca\" email." << col_end << endl;
+                              cout << col_green << "Confirmation of the submission was sent to your \"myseneca.ca\" email." << col_end << endl;
                            }
                            else {
                               bad = error(19, "Confirmation email failed.");
@@ -928,7 +928,7 @@ namespace sict {
                         if (yes()) {
                            for (i = 1; i < signed(m_asVals["prof_email"].size()); i++) {
                               if (submit(m_asVals["prof_email"][i])) {
-                                 cout <<col_green <<  "CC no " << i << " is sent to the TA for feedback." << col_end << endl;
+                                 cout <<col_green <<  "CC no " << i << " was sent to the TA for feedback." << col_end << endl;
                               }
                               else {
                                  bad = error(19, "Email CC failed.");
@@ -954,6 +954,7 @@ namespace sict {
    bool Submitter::submit(string& toEmail, bool Confirmation) {
       Command email("echo \"");
       bool include_output_in_email = false;
+      bool cc_files_to_students = !(m_asVals.exist("CC_student_files") && m_asVals["CC_student_files"][0] == "no");
       email += name();
       if (m_late) {
          email += " ";
@@ -989,16 +990,17 @@ namespace sict {
       }
       email += " submission by `whoami`\" ";
       email += " -Sreplyto=`whoami`@myseneca.ca ";
-      for (int i = 0; i < m_asVals["submit_files"].size(); i++) {
-         email += " -a " + m_asVals["submit_files"][i];
-         if (m_asVals.exist("output_file") && m_asVals["submit_files"][i] == m_asVals["output_file"][0]) {
-            include_output_in_email = true;
+      if (!Confirmation || cc_files_to_students) {
+         for (int i = 0; i < m_asVals["submit_files"].size(); i++) {
+            email += " -a " + m_asVals["submit_files"][i];
+            if (m_asVals.exist("output_file") && m_asVals["submit_files"][i] == m_asVals["output_file"][0]) {
+               include_output_in_email = true;
+            }
+         }
+         if (m_asVals.exist("output_file") && !include_output_in_email && (m_skipSpaces || m_skipNewlines)) {
+            email += " -a " + m_asVals["output_file"][0];
          }
       }
-      if (m_asVals.exist("output_file") && !include_output_in_email && (m_skipSpaces || m_skipNewlines)) {
-         email += " -a " + m_asVals["output_file"][0];
-      }
-
       if (Confirmation) { // send email to student from prof and ingore the toEmail argument
          email += " `whoami`@myseneca.ca";
       }
