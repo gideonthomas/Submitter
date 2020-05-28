@@ -12,7 +12,7 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.8.2 ignoring DOS carriage returns"
+#define SUBMITTER_VERSION "0.99.8.2 ignoring DOS carriage returns[Testing]"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif

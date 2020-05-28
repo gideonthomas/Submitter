@@ -324,10 +324,8 @@ namespace sict {
       return isEmpty;
    }
    bool Submitter::compareOutputs(int from, int to) {
-//      char sstr[4096], pstr[4096];
       string sstr, pstr;
       bool good = true;
-      //bool longFile = false;
       int pline = 0;
       int sline = 0;
       ifstream stfile(m_asVals["output_file"][0].c_str());
@@ -341,23 +339,10 @@ namespace sict {
          good = false;
       }
       while (pline < to && good && stfile && prfile) {
-       //  sstr[0] = pstr[0] = 0;
-/*
-         do {
-            sline++;
-            stfile.getline(sstr, 4095, '\n');
-         } while (m_skipNewlines && isEmptyLine(sstr) && stfile); 
-*/
          do {
             sline++;
             getline(stfile, sstr);
          } while (m_skipNewlines && sstr.empty() && stfile);
-/*
-         do {
-            pline++;
-            prfile.getline(pstr, 4095, '\n');
-         } while (m_skipNewlines && isEmptyLine(pstr) && prfile);
-*/
          do {
             pline++;
             getline(prfile, pstr);
