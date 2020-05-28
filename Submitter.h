@@ -12,11 +12,11 @@
 #ifdef SUBMITTER_VERSION
 # undef SUBMITTER_VERSION
 #endif
-#define SUBMITTER_VERSION "0.99.8.1 Confirmation with no attachments"
+#define SUBMITTER_VERSION "0.99.8.2 ignoring DOS carriage returns"
 #ifdef SUBMITTER_DATE
 # undef SUBMITTER_DATE
 #endif
-#define SUBMITTER_DATE "2020-02-20"
+#define SUBMITTER_DATE "2020-05-28"
 //    program config file
 #ifdef SUB_CFG_FILE
 # undef SUB_CFG_FILE
