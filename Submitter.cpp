@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include <string>
 #include "Vals.h"
 #include "SubVals.h"
 #include "Command.h"
@@ -209,6 +210,8 @@ namespace sict {
       do {
          pi++;
          si++;
+         if (prof[pi] == '\r') pi++;
+         if (std[si] == '\r') si++;
          if (m_skipSpaces) {
             while (prof[pi] && isSpace(prof[pi])) {
                pi++;
@@ -321,9 +324,8 @@ namespace sict {
       return isEmpty;
    }
    bool Submitter::compareOutputs(int from, int to) {
-      char sstr[4096], pstr[4096];
+      string sstr, pstr;
       bool good = true;
-      //bool longFile = false;
       int pline = 0;
       int sline = 0;
       ifstream stfile(m_asVals["output_file"][0].c_str());
@@ -337,17 +339,16 @@ namespace sict {
          good = false;
       }
       while (pline < to && good && stfile && prfile) {
-         sstr[0] = pstr[0] = 0;
          do {
             sline++;
-            stfile.getline(sstr, 4095, '\n');
-         } while (m_skipNewlines && isEmptyLine(sstr) && stfile);
+            getline(stfile, sstr);
+         } while (m_skipNewlines && sstr.empty() && stfile);
          do {
             pline++;
-            prfile.getline(pstr, 4095, '\n');
-         } while (m_skipNewlines && isEmptyLine(pstr) && prfile);
+            getline(prfile, pstr);
+         } while (m_skipNewlines && pstr.empty() && prfile);
          if (!skipLine(pline) && pline >= from && pline <= to) {
-            m_ok2submit = good = compare(sstr, pstr, pline);
+            m_ok2submit = good = compare(sstr.c_str(), pstr.c_str(), pline);
          }
       }
       if (pline < from) {
@@ -684,7 +685,7 @@ namespace sict {
          setSubmitterDir();
          // get the assignment specs and put it in AsVals
          bad = int(!getAssignmentValues()) * 2;
-         bad&& cout << "Error #2:" << endl << "Cannot submit delivarable: \"" << m_configFileName << "\" "
+         bad&& cout << "Error #2:" << endl << "Cannot submit deliverable: \"" << m_configFileName << "\" "
             << "for the submit command:" << endl << endl << "   ~profName.profLastname/submit [deliverable_name]<ENTER>" << endl << endl
             << "Make sure the deliverable_name \"" << m_configFileName << "\" is not misspelled." << endl
             << "If you continue to get this error message, include the submission" << endl
@@ -890,7 +891,7 @@ namespace sict {
                if (m_asVals.exist("submit_files")) {
                   cout << endl << col_yellow << "Submission: " << col_end << endl;
                   if (!bad && m_asVals.exist("due_dates")) {
-                     if(m_feedbackOnly){
+                     if (m_feedbackOnly) {
                         cout << endl << col_red << "This is a dry run only; Nothing will be submitted." << endl << endl
                            << col_yellow << "Submission dates:" << col_end << endl;
                         printDueDates();
@@ -905,7 +906,9 @@ namespace sict {
                      }
                      cout << col_end;
                   }
-                  if(!m_feedbackOnly) cout << col_yellow << "Would you like to submit this demonstration of " << col_cyan << name() << col_yellow << "? (Y)es/(N)o: " << col_end;
+                  if (!m_feedbackOnly) {
+                     cout << col_yellow << "Would you like to submit this demonstration of " << col_cyan << name() << col_yellow << "? (Y)es/(N)o: " << col_end;
+                  }
                   if (!m_feedbackOnly && yes()) {
                      if (submit(m_asVals["prof_email"][0])) {
                         cout << col_green << "Thank you!, Your work is now submitted." << endl << col_end;
