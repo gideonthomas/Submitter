@@ -991,7 +991,7 @@ namespace sict {
          if (m_skipSpaces && m_skipNewlines) email += " - ";
          if (m_skipNewlines) email += " lines";
       }
-      email += " submission by `whoami`\" ";
+      email += " submission by `whoami` at `date +'%Y-%m-%d %r'`\" ";
       email += " -Sreplyto=`whoami`@myseneca.ca ";
       if (!Confirmation || cc_files_to_students) {
          for (int i = 0; i < m_asVals["submit_files"].size(); i++) {
